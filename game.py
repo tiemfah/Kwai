@@ -40,6 +40,13 @@ class GameWindow(arcade.Window):
         
         # draw sprite
         self.player.draw()
+    
+    def on_key_press(self, key, modifiers):
+        self.world.on_key_press(key, modifiers)
+    
+    def on_key_release(self, key, modifiers):
+        self.world.on_key_release()
+
  
  
 def main():
