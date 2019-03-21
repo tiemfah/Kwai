@@ -1,3 +1,3 @@
 # The Lama X
-SKE 2019 Project
-## เมื่อไหรจะเสร็จช่วยด้วย
+SKE Freshman year's second semester project
+# เมื่อไหรจะเสร็จช่วยด้วย
