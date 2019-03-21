@@ -59,7 +59,11 @@ class Dirt:
     can be destroy by player
     can block player
     """
-    pass
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
+        self.is_dead = False
 
 
 class Nondirt:
@@ -67,16 +71,35 @@ class Nondirt:
     can block player
     can have many "skin"
     """
-    pass
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
+
+
+class Platform:
+    """
+    make platfrom
+    """
+    def __init__(self, world):
+        self.level_1_map = ['$$#...#$$',
+                            '$$#DD.#$$',
+                            '$$#D.D#$$',
+                            '$$#.DD#$$']
+        self.level_2_map = ['$#.....#$',
+                            '$#DDDD.#$',
+                            '$#DDD..#$',
+                            '$#.DDDD#$',
+                            '$#DD.DD#$',
+                            '$#D.DDD#$',]
 
  
 class World:
     def __init__(self, width, height):
         self.width = width
         self.height = height
- 
         self.player = Player(self, width // 2, height // 2)
- 
+
     def update(self, delta):
         self.player.update(delta)
     
