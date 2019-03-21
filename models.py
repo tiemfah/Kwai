@@ -17,5 +17,6 @@ class World:
  
         self.player = Player(self, width // 2, height // 2)
  
-     def update(self, delta):
+    def update(self, delta):
         self.player.update(delta)
+    

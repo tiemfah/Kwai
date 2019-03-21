@@ -39,7 +39,7 @@ class GameWindow(arcade.Window):
         arcade.start_render()
         
         # draw sprite
-        self.pacman_sprite.draw()
+        self.player.draw()
  
  
 def main():
