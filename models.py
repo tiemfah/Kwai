@@ -33,6 +33,7 @@ class Player:
         self.y = y
         self.wait_time = 0
         self.direction = DIR_STILL
+        self.next_direction = DIR_STILL  # check off here
     
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
@@ -44,6 +45,13 @@ class Player:
         if self.wait_time >= Player.MOVE_WAIT:
             self.move(self.direction)
             self.wait_time = 0
+    
+    def check_next(self, next_direction):  # check off here
+        """
+        HERERHERHERHER
+        """
+        next_x = self.x+ GRID * DIR_OFFSETS[direction][0]
+        next_y = self.y+ GRID * DIR_OFFSETS[direction][1]
 
 
 class Dirt:

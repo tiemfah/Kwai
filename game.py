@@ -1,8 +1,8 @@
 import arcade
 from models import *
  
-SCREEN_WIDTH = 32*12
-SCREEN_HEIGHT = 32*9
+SCREEN_WIDTH = 32*9
+SCREEN_HEIGHT = 32*18
 
 
 class ModelSprite(arcade.Sprite):
