@@ -1,8 +1,8 @@
 import arcade
 from models import *
  
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 32*12
+SCREEN_HEIGHT = 32*9
 
 
 class ModelSprite(arcade.Sprite):
@@ -24,11 +24,11 @@ class GameWindow(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
  
-        arcade.set_background_color(arcade.color.BLACK)
+        arcade.set_background_color(arcade.color.WHITE)
 
         # create game sprite
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.player = ModelSprite('resources/images/lama.png',
+        self.player = ModelSprite('resources/images/mc.png',
                                          model=self.world.player)
 
     def update(self, delta):
@@ -47,8 +47,7 @@ class GameWindow(arcade.Window):
     def on_key_release(self, key, modifiers):
         self.world.on_key_release()
 
- 
- 
+
 def main():
     window = GameWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
     arcade.set_window(window)

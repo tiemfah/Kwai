@@ -1,5 +1,7 @@
 import arcade
 
+GRID = 32
+
 DIR_STILL = 0
 DIR_UP = 1
 DIR_RIGHT = 2
@@ -19,18 +21,46 @@ KEY_MAP = { arcade.key.UP: DIR_UP,
 
 
 class Player:
+    """
+    can move, 
+    can hit (dirt, enemy, coin),
+    can fall 
+    """
+    MOVE_WAIT = 0.1
     def __init__(self, world, x, y):
         self.world = world
         self.x = x
         self.y = y
+        self.wait_time = 0
         self.direction = DIR_STILL
     
     def move(self, direction):
-        self.x += DIR_OFFSETS[direction][0]
-        self.y += DIR_OFFSETS[direction][1]
+        self.x += GRID * DIR_OFFSETS[direction][0]
+        self.y += GRID * DIR_OFFSETS[direction][1]
  
     def update(self, delta):
-        self.move(self.direction)
+        self.wait_time += delta
+
+        if self.wait_time >= Player.MOVE_WAIT:
+            self.move(self.direction)
+            self.wait_time = 0
+
+
+class Dirt:
+    """
+    can be destroy by player
+    can block player
+    """
+    pass
+
+
+class Nondirt:
+    """
+    can block player
+    can have many "skin"
+    """
+    pass
+
  
 class World:
     def __init__(self, width, height):
