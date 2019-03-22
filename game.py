@@ -1,8 +1,9 @@
 import arcade
 from models import *
  
-SCREEN_WIDTH = 32*9
-SCREEN_HEIGHT = 32*18
+GRID = GRID
+SCREEN_WIDTH = GRID * 9
+SCREEN_HEIGHT = GRID * 18
 
 
 class ModelSprite(arcade.Sprite):
@@ -18,6 +19,38 @@ class ModelSprite(arcade.Sprite):
     def draw(self):
         self.sync_with_model()
         super().draw()
+
+
+class LevelGenerator():
+    def __init__(self, Levelmap):
+        self.level = Levelmap
+        self.width = self.level.width
+        self.height = self.level.height
+
+        self.sky_sprite = arcade.Sprite('resources/images/sky.png')
+        self.dirt_sprite = arcade.Sprite('resources/images/dirt.png')
+        self.stone_sprite = arcade.Sprite('resources/images/stone.png')
+
+    def get_sprite_pos(self, r, c):
+        x = (c * GRID + (GRID // 2))
+        y = SCREEN_HEIGHT- ((r-1) * GRID + (GRID + (GRID // 2)))
+        return x,y
+    
+    def draw_sprite(self, sprite, r, c):
+        x, y = self.get_sprite_pos(r, c)
+        sprite.set_position(x, y)
+        sprite.draw()
+    
+    def draw(self):
+        for r in range(self.height):
+            for c in range(self.width):
+                iden =  self.level.what_is_at(r, c)
+                if iden == "sky":
+                    self.draw_sprite(self.sky_sprite, r, c)
+                elif iden == "dirt":
+                    self.draw_sprite(self.dirt_sprite, r, c)
+                elif iden == "stone":
+                    self.draw_sprite(self.stone_sprite, r, c)
  
 
 class GameWindow(arcade.Window):
@@ -25,20 +58,19 @@ class GameWindow(arcade.Window):
         super().__init__(width, height)
  
         arcade.set_background_color(arcade.color.WHITE)
-
-        # create game sprite
+        
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = ModelSprite('resources/images/mc.png',
                                          model=self.world.player)
+        self.map = LevelGenerator(self.world.level)
 
     def update(self, delta):
-        # update game logic
         self.world.update(delta)
  
     def on_draw(self):
         arcade.start_render()
         
-        # draw sprite
+        self.map.draw()
         self.player.draw()
     
     def on_key_press(self, key, modifiers):
