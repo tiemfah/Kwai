@@ -1,5 +1,6 @@
 import arcade
 import random
+import math
 
 GRID = 32
 
@@ -10,9 +11,9 @@ DIR_DOWN = 3
 DIR_LEFT = 4
  
 DIR_OFFSETS = { DIR_STILL: (0,0),
-                DIR_UP: (0,1),
+                DIR_UP: (0,-1),
                 DIR_RIGHT: (1,0),
-                DIR_DOWN: (0,-1),
+                DIR_DOWN: (0,1),
                 DIR_LEFT: (-1,0) }
 
 KEY_MAP = { arcade.key.W: DIR_UP,
@@ -35,26 +36,38 @@ class Player:
         self.wait_time = 0
         self.direction = DIR_STILL
         self.next_direction = DIR_STILL  # check off here
-
+        self.GRID = GRID
         self.score = 0
     
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
-        self.y += GRID * DIR_OFFSETS[direction][1]
+        self.y -= GRID * DIR_OFFSETS[direction][1]
  
-    def update(self, delta):
-        self.wait_time += delta
-
-        if self.wait_time >= Player.MOVE_WAIT:
-            self.move(self.direction)
-            self.wait_time = 0
+    def update(self):
+        if self.next_direction != DIR_STILL:
+            if self.check_moveable(self.next_direction):
+                self.direction = self.next_direction
+                self.next_direction = DIR_STILL
+                self.move(self.direction)
     
-    def check_next(self, next_direction):  # check off here
+    def get_row(self):
+        # print(18 - math.ceil(self.y/self.GRID))
+        return  18 - math.ceil(self.y/self.GRID)
+ 
+    def get_col(self):
+        # print(math.floor(self.x /self.GRID))
+        return math.floor(self.x /self.GRID)
+    
+    def check_moveable(self, next_direction):  # check off here
         """
         HERERHERHERHER
         """
-        next_x = self.x+ GRID * DIR_OFFSETS[direction][0]
-        next_y = self.y+ GRID * DIR_OFFSETS[direction][1]
+        print('current', self.get_row(), self.get_col())
+        new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
+        new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
+        print('next', new_r, new_c)
+        print(self.world.level.what_is_at(new_r, new_c))
+        return self.world.level.what_is_at(new_r, new_c) == 'air'
 
 
 class Dirt:
@@ -156,16 +169,14 @@ class World:
         self.height = height
         self.player = Player(self, GRID//2+ 3*GRID, GRID*17+GRID//2)
         self.level = Level(self)
-        
-        
 
     def update(self, delta):
-        self.player.update(delta)
+        self.player.update()
         self.level.update()
     
     def on_key_press(self, key, key_modifiers):
         if key in KEY_MAP:
-            self.player.direction = KEY_MAP[key]
+            self.player.next_direction = KEY_MAP[key]
     
     def on_key_release(self):
         self.player.direction = DIR_STILL

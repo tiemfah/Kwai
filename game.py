@@ -1,7 +1,7 @@
 import arcade
 from models import *
  
-GRID = GRID
+GRID = 32
 SCREEN_WIDTH = GRID * 9
 SCREEN_HEIGHT = GRID * 18
 
