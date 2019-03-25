@@ -24,6 +24,9 @@ class ModelSprite(arcade.Sprite):
 
 
 class LevelGenerator():
+    """
+    TODO fix: generated block not being draw.
+    """
     def __init__(self, Levelmap):
         self.level = Levelmap
         self.width = self.level.width
