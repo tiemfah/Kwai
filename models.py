@@ -11,7 +11,7 @@ DIR_DOWN = 3
 DIR_LEFT = 4
 
 DIR_OFFSETS = {DIR_STILL: (0, 0),
-               DIR_UP: (0, -1),
+               DIR_UP: (0, 0),
                DIR_RIGHT: (1, 0),
                DIR_DOWN: (0, 1),
                DIR_LEFT: (-1, 0)}
@@ -112,19 +112,17 @@ class Level:
 
     def __init__(self, worldx):
         self.world = worldx
-        self.map = self.choose_map() + \
-                   self.choose_map() + \
-                   self.choose_map() + \
-                   self.choose_map() + \
-                   self.choose_map() + \
-                   self.choose_map() + \
-                   self.choose_map() + \
-                   self.choose_map() + \
-                   self.choose_map()
-
+        self.map = self.start_map(9)
         self.height = len(self.map)
         self.width = len(self.map[0])
         self.previous_score = self.world.player.score
+    
+    def start_map(self, n):
+        temp = []
+        for num in range(n):
+            temp += self.choose_map()
+        return temp
+
 
     def choose_map(self):
         """
