@@ -107,7 +107,9 @@ class GameWindow(arcade.Window):
 
         # show score
         output = f"Score: {self.world.player.score}"
-        arcade.draw_text(output, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, arcade.color.RED, 14)
+        arcade.draw_text(output, SCREEN_WIDTH // 2,
+                         SCREEN_HEIGHT // 2,
+                         arcade.color.RED, 14)
 
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)
