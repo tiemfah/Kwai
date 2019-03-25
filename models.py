@@ -138,8 +138,6 @@ class Level:
     def what_is_at(self, r, c):
         """
         name implies
-        
-        LAST TIME I CHECKED THIS FUNCTION WORK!
         """
         if self.map[r][c] == "D":
             return "dirt"
