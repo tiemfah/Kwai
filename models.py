@@ -24,9 +24,9 @@ KEY_MAP = {arcade.key.W: DIR_UP,
 
 class Player:
     """
-    can move, 
+    can move,
     can hit (dirt, enemy, coin),
-    can fall 
+    can fall
     """
     MOVE_WAIT = 0.1
 
@@ -116,13 +116,12 @@ class Level:
         self.height = len(self.map)
         self.width = len(self.map[0])
         self.previous_score = self.world.player.score
-    
+
     def start_map(self, n):
         temp = []
         for num in range(n):
             temp += self.choose_map()
         return temp
-
 
     def choose_map(self):
         """
