@@ -106,7 +106,7 @@ class Level:
                    '$#DDD..#$',
                    '$#.DDDD#$',
                    '$#DD.DD#$',
-                   '$#D.DDD#$', ]
+                   '$#D.DDD#$',]
     """
     make platform
     TODO make new map pool.
