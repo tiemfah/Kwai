@@ -37,7 +37,9 @@ class Player:
         self.direction = DIR_STILL
         self.next_direction = DIR_STILL  # check off here
         self.GRID = GRID
+        self.starting_point = y
         self.score = 0
+        
     
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
@@ -49,6 +51,7 @@ class Player:
                 self.direction = self.next_direction
                 self.next_direction = DIR_STILL
                 self.move(self.direction)
+        self.score = (self.starting_point - self.y)//32
     
     def get_row(self):
         # print(18 - math.ceil(self.y/self.GRID))
@@ -62,11 +65,11 @@ class Player:
         """
         HERERHERHERHER
         """
-        print('current', self.get_row(), self.get_col())
+        # print('current', self.get_row(), self.get_col())
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
-        print('next', new_r, new_c)
-        print(self.world.level.what_is_at(new_r, new_c))
+        # print('next', new_r, new_c)
+        # print(self.world.level.what_is_at(new_r, new_c))
         return self.world.level.what_is_at(new_r, new_c) == 'air'
 
 
@@ -158,8 +161,8 @@ class Level:
 
         THIS SHOULD WORK HAVEN'T TEST THIS
         """
-        if self.previous_score + 2 == self.world.player.score:
-            self.map = self.map[2:] + self.choose_map()
+        if self.previous_score + 1 == self.world.player.score:
+            self.map += self.choose_map()
             self.previous_score = self.world.player.score
         
  

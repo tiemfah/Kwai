@@ -4,6 +4,7 @@ from models import *
 GRID = 32
 SCREEN_WIDTH = GRID * 9
 SCREEN_HEIGHT = GRID * 18
+VIEWPORT_MARGIN = GRID * 8
 
 
 class ModelSprite(arcade.Sprite):
@@ -51,6 +52,11 @@ class LevelGenerator():
                     self.draw_sprite(self.dirt_sprite, r, c)
                 elif iden == "stone":
                     self.draw_sprite(self.stone_sprite, r, c)
+    
+    def update(self, Levelmap):
+        self.level = Levelmap
+        self.width = self.level.width
+        self.height = self.level.height
  
 
 class GameWindow(arcade.Window):
@@ -62,16 +68,44 @@ class GameWindow(arcade.Window):
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = ModelSprite('resources/images/mc.png',
                                          model=self.world.player)
+
         self.map = LevelGenerator(self.world.level)
+        self.view_bottom = 0
+    
+    def change_view(self):
+        changed = True
+        top_bndry = self.view_bottom + SCREEN_HEIGHT - VIEWPORT_MARGIN
+        if self.world.player.y+16 > top_bndry:
+            self.view_bottom += self.world.player.y+16 - top_bndry
+            changed = True
+
+        # Scroll down
+        bottom_bndry = self.view_bottom + VIEWPORT_MARGIN
+        if self.world.player.y-16 < bottom_bndry:
+            self.view_bottom -= bottom_bndry - self.world.player.y-16
+            changed = True
+
+        if changed:
+            arcade.set_viewport(0,
+                                SCREEN_WIDTH,
+                                self.view_bottom,
+                                SCREEN_HEIGHT + self.view_bottom)
 
     def update(self, delta):
         self.world.update(delta)
+        self.change_view()
+        self.map = LevelGenerator(self.world.level)
+        
  
     def on_draw(self):
         arcade.start_render()
         
         self.map.draw()
         self.player.draw()
+
+        # show score
+        output = f"Score: {self.world.player.score}"
+        arcade.draw_text(output, SCREEN_WIDTH//2, SCREEN_HEIGHT//2, arcade.color.RED, 14)
     
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)
