@@ -23,12 +23,12 @@ class ModelSprite(arcade.Sprite):
         super().draw()
 
 
-class LevelGenerator():
+class LevelDrawer():
     """
     TODO fix: generated block not being draw.
     """
-    def __init__(self, Levelmap):
-        self.level = Levelmap
+    def __init__(self, levelmap):
+        self.level = levelmap
         self.width = self.level.width
         self.height = self.level.height
 
@@ -37,8 +37,8 @@ class LevelGenerator():
         self.stone_sprite = arcade.Sprite('resources/images/stone.png')
 
     def get_sprite_position(self, r, c):
-        x = (c * GRID + (GRID // 2))
-        y = SCREEN_HEIGHT - ((r - 1) * GRID + (GRID + (GRID // 2)))
+        x = c * GRID + (GRID // 2)
+        y = SCREEN_HEIGHT - (r * GRID + GRID // 2)
         return x, y
 
     def draw_sprite(self, sprite, r, c):
@@ -73,7 +73,7 @@ class GameWindow(arcade.Window):
         self.player = ModelSprite('resources/images/mc.png',
                                   model=self.world.player)
 
-        self.map = LevelGenerator(self.world.level)
+        self.map = LevelDrawer(self.world.level)
         self.view_bottom = 0
 
     def change_view(self):
@@ -96,13 +96,13 @@ class GameWindow(arcade.Window):
 
     def update(self, delta):
         self.world.update(delta)
+        self.level_drawer = LevelDrawer(self.world.level)
         self.change_view()
-        self.map = LevelGenerator(self.world.level)
 
     def on_draw(self):
         arcade.start_render()
 
-        self.map.draw()
+        self.level_drawer.draw()
         self.player.draw()
 
         # show score

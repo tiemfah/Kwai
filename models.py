@@ -154,6 +154,8 @@ class Level:
         """
         if self.previous_score + 1 == self.world.player.score:
             self.map += self.choose_map()
+            self.height = len(self.map)
+            self.width = len(self.map[0])
             self.previous_score = self.world.player.score
 
 
