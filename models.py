@@ -27,6 +27,7 @@ class Player:
     can move,
     can hit (dirt, enemy, coin),
     can fall
+    TODO can hit dirt
     """
     MOVE_WAIT = 0.1
 
@@ -107,7 +108,9 @@ class Level:
                    '$#DD.DD#$',
                    '$#D.DDD#$', ]
     """
-    make platfrom
+    make platform
+    TODO make new map pool.
+    TODO may be add coin?
     """
 
     def __init__(self, worldx):

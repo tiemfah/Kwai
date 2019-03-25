@@ -25,7 +25,7 @@ class ModelSprite(arcade.Sprite):
 
 class LevelDrawer():
     """
-    TODO fix: generated block not being draw.
+    TODO Player can hit dirt
     """
     def __init__(self, levelmap):
         self.level = levelmap
