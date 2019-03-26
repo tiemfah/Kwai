@@ -27,7 +27,6 @@ class Player:
     can move,
     can hit (dirt, enemy, coin),
     can fall
-    TODO can hit dirt
     """
     MOVE_WAIT = 0.1
 
@@ -124,7 +123,6 @@ class Level:
                    '$#D.DDD#$',]
     """
     make platform
-    TODO make new map pool.
     TODO may be add coin?
     """
 
@@ -142,7 +140,7 @@ class Level:
         return temp
     
     def choice_n_time(self, n):
-        possibility = ['.','.','#','D','D','D']
+        possibility = ['.','.','.','#','D','D','D']
         temp = []
         for num in range(n):
             temp.append(choice(possibility))
