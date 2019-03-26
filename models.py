@@ -1,5 +1,5 @@
 import arcade.key
-from random import choice
+from random import choice, choices
 from math import ceil, floor
 
 GRID = 32
@@ -40,7 +40,10 @@ class Player:
         self.next_direction = DIR_STILL
         self.GRID = GRID
         self.starting_point = y
-        self.score = 0
+        self.depth_score = 0
+        self.pickup_score = 0
+        self.battle_score = 0
+        self.score = self.depth_score + self.pickup_score + self.battle_score
 
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
@@ -52,21 +55,33 @@ class Player:
                 self.direction = self.next_direction
                 self.next_direction = DIR_STILL
                 self.move(self.direction)
-        self.score = (self.starting_point - self.y) // 32
+            elif self.check_destructable(self.next_direction):
+                self.destroy(self.next_direction)
+                self.next_direction = DIR_STILL
+        self.depth_score = (self.starting_point - self.y) // 32
 
     def get_row(self):
         return 18 - ceil(self.y / self.GRID)
 
     def get_col(self):
         return floor(self.x / self.GRID)
-
+    
     def check_moveable(self, next_direction):
         # print('current', self.get_row(), self.get_col())
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
         # print('next', new_r, new_c)
-        # print(self.world.level.what_is_at(new_r, new_c))
         return self.world.level.what_is_at(new_r, new_c) == 'air'
+    
+    def check_destructable(self, next_direction):
+        new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
+        new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
+        return self.world.level.what_is_at(new_r, new_c) == 'dirt'
+
+    def destroy(self, next_direction):
+        new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
+        new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
+        self.world.level.break_dirt(new_r, new_c)
 
 
 class Dirt:
@@ -118,20 +133,33 @@ class Level:
         self.map = self.start_map(9)
         self.height = len(self.map)
         self.width = len(self.map[0])
-        self.previous_score = self.world.player.score
+        self.previous_score = self.world.player.depth_score
 
     def start_map(self, n):
         temp = []
         for num in range(n):
             temp += self.choose_map()
         return temp
+    
+    def choice_n_time(self, n):
+        possibility = ['.','.','#','D','D','D']
+        temp = []
+        for num in range(n):
+            temp.append(choice(possibility))
+        return temp
+    
+    def wild_random(self, level):
+        if level == 1:
+            return ''.join(['$$#'] + self.choice_n_time(3) + ['#$$'])
+        elif level == 2:
+            return ''.join(['$#'] + self.choice_n_time(5) + ['#$'])
 
     def choose_map(self):
         """
         pick random map that gives 2 block
         """
-        if self.world.player.score < Level.LEV_1_CAP:
-            return [Level.level_1_map[0], choice(Level.level_1_map)]
+        if self.world.player.pickup_score < Level.LEV_1_CAP:
+            return [self.wild_random(1), choice(Level.level_1_map)]
         else:
             return [Level.level_2_map[0], choice(Level.level_2_map)]
 
@@ -147,16 +175,19 @@ class Level:
             return "stone"
         elif self.map[r][c] == ".":
             return "air"
+    
+    def break_dirt(self, r, c):
+        self.map[r] = self.map[r][:c]+'.'+self.map[r][c+1:]
 
     def update(self):
         """
         see if map need new "block"
         """
-        if self.previous_score + 1 == self.world.player.score:
+        if self.previous_score + 1 == self.world.player.depth_score:
             self.map += self.choose_map()
             self.height = len(self.map)
             self.width = len(self.map[0])
-            self.previous_score = self.world.player.score
+            self.previous_score = self.world.player.depth_score
 
 
 class World:
