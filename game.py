@@ -24,17 +24,15 @@ class ModelSprite(arcade.Sprite):
 
 
 class LevelDrawer():
-    """
-    TODO Player can hit dirt
-    """
     def __init__(self, levelmap):
         self.level = levelmap
         self.width = self.level.width
         self.height = self.level.height
 
-        self.sky_sprite = arcade.Sprite('resources/images/sky.png')
-        self.dirt_sprite = arcade.Sprite('resources/images/dirt.png')
-        self.stone_sprite = arcade.Sprite('resources/images/stone.png')
+        self.sky_sprite = ModelSprite('resources/images/sky.png')
+        self.dirt_sprite = ModelSprite('resources/images/dirt.png')
+        self.stone_sprite = ModelSprite('resources/images/stone.png')
+        self.gold_sprite = ModelSprite('resources/images/gold.png')
 
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -56,6 +54,8 @@ class LevelDrawer():
                     self.draw_sprite(self.dirt_sprite, r, c)
                 elif identity == "stone":
                     self.draw_sprite(self.stone_sprite, r, c)
+                elif identity == "gold":
+                    self.draw_sprite(self.gold_sprite, r, c)
 
     def update(self, Levelmap):
         self.level = Levelmap

@@ -1,6 +1,7 @@
 import arcade.key
 from random import choice, choices
 from math import ceil, floor
+from map_pool import *
 
 GRID = 32
 
@@ -28,7 +29,7 @@ class Player:
     can hit (dirt, enemy, coin),
     can fall
     """
-    MOVE_WAIT = 0.13
+    MOVE_WAIT = 0.15
 
     def __init__(self, world, x, y):
         self.world = world
@@ -50,20 +51,28 @@ class Player:
 
     def update(self, delta):
         self.wait_time += delta
-        if self.next_direction != DIR_STILL:
-            if self.check_moveable(self.next_direction):
-                self.direction = self.next_direction
+        if self.wait_time > Player.MOVE_WAIT:
+            next_block = self.what_next(self.next_direction)
+            if self.next_direction != DIR_STILL:
+                if next_block == 'gold':
+                    self.remove_this(self.next_direction)
+                    self.pickup_score += 1
+                elif next_block == 'dirt':
+                    self.remove_this(self.next_direction)
+                elif next_block == 'air':
+                    self.direction = self.next_direction
+                    self.move(self.direction)
                 self.next_direction = DIR_STILL
-                self.move(self.direction)
-            elif self.check_destructable(self.next_direction):
-                self.destroy(self.next_direction)
-                self.next_direction = DIR_STILL
-        else:
-            if self.check_fall() and self.wait_time > Player.MOVE_WAIT:
-                self.wait_time = 0
-                self.move(DIR_DOWN)
-        self.depth_score = (self.starting_point - self.y) // 32
-        self.score = self.depth_score + self.pickup_score + self.battle_score
+            else:
+                if next_block == 'gold':
+                    self.remove_this(self.next_direction)
+                    self.next_direction = DIR_STILL
+                    self.pickup_score += 1
+                if self.check_fall():
+                    self.move(DIR_DOWN)
+            self.wait_time = 0
+        self.depth_score = (self.starting_point - self.y) // 96
+        self.score = self.pickup_score + self.battle_score + self.depth_score
 
     def get_row(self):
         return 18 - ceil(self.y / self.GRID)
@@ -71,72 +80,23 @@ class Player:
     def get_col(self):
         return floor(self.x / self.GRID)
     
-    def check_moveable(self, next_direction):
-        # print('current', self.get_row(), self.get_col())
-        new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
-        new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
-        # print('next', new_r, new_c)
-        return self.world.level.what_is_at(new_r, new_c) == 'air'
-    
     def check_fall(self):
         new_r = self.get_row()+1
         new_c = self.get_col()
-        return self.world.level.what_is_at(new_r, new_c) == 'air'
+        return self.world.level.what_is_at(new_r, new_c) in ['air', 'gold']
     
-    def check_destructable(self, next_direction):
+    def remove_this(self, next_direction):
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
-        return self.world.level.what_is_at(new_r, new_c) == 'dirt'
-
-    def destroy(self, next_direction):
+        self.world.level.remove_this(new_r, new_c)
+    
+    def what_next(self, next_direction):
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
-        self.world.level.break_dirt(new_r, new_c)
-
-
-class Dirt:
-    """
-    can be destroy by player
-    can block player
-    """
-
-    def __init__(self, world, x, y):
-        self.world = world
-        self.x = x
-        self.y = y
-        self.is_dead = False
-
-
-class Nondirt:
-    """
-    can block player
-    can have many "skin"
-    """
-
-    def __init__(self, world, x, y):
-        self.world = world
-        self.x = x
-        self.y = y
-
+        return self.world.level.what_is_at(new_r, new_c)
 
 class Level:
-    LEV_1_CAP = 20
-    LEV_2_CAP = 40
-    level_1_map = ['$$#...#$$',
-                   '$$#DD.#$$',
-                   '$$#D.D#$$',
-                   '$$#.DD#$$']
-    level_2_map = ['$#.....#$',
-                   '$#DDDD.#$',
-                   '$#DDD..#$',
-                   '$#.DDDD#$',
-                   '$#DD.DD#$',
-                   '$#D.DDD#$',]
-    """
-    make platform
-    TODO may be add coin?
-    """
-
+    
     def __init__(self, worldx):
         self.world = worldx
         self.map = self.start_map(9)
@@ -151,7 +111,7 @@ class Level:
         return temp
     
     def choice_n_time(self, n):
-        possibility = ['.','.','.','#','D','D','D']
+        possibility = random_with_weight([('.',7,),('D',6,),('#',4),('G',1)])
         temp = []
         for num in range(n):
             temp.append(choice(possibility))
@@ -167,10 +127,10 @@ class Level:
         """
         pick random map that gives 2 block
         """
-        if self.world.player.depth_score < Level.LEV_1_CAP:
-            return [self.wild_random(1), choice(Level.level_1_map)]
+        if self.world.player.depth_score < LEV_1_CAP:
+            return [self.wild_random(1), choice(level_1_map)]
         else:
-            return [self.wild_random(2), choice(Level.level_2_map)]
+            return [self.wild_random(2), choice(level_2_map)]
 
     def what_is_at(self, r, c):
         """
@@ -184,8 +144,10 @@ class Level:
             return "stone"
         elif self.map[r][c] == ".":
             return "air"
+        elif self.map[r][c] == "G":
+            return "gold"
     
-    def break_dirt(self, r, c):
+    def remove_this(self, r, c):
         self.map[r] = self.map[r][:c]+'.'+self.map[r][c+1:]
 
     def update(self):
