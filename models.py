@@ -34,7 +34,7 @@ class Player:
         self.world = world
         self.x = x
         self.y = y
-        self.wait_time = 0
+        self.wait_time = 0 
         self.direction = DIR_STILL
         self.next_direction = DIR_STILL
         self.GRID = GRID
@@ -57,6 +57,10 @@ class Player:
             elif self.check_destructable(self.next_direction):
                 self.destroy(self.next_direction)
                 self.next_direction = DIR_STILL
+        else:
+            if self.check_fall():
+                self.move(DIR_DOWN)
+                self.
         self.depth_score = (self.starting_point - self.y) // 32
 
     def get_row(self):
@@ -70,6 +74,11 @@ class Player:
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
         # print('next', new_r, new_c)
+        return self.world.level.what_is_at(new_r, new_c) == 'air'
+    
+    def check_fall(self):
+        new_r = self.get_row()+1
+        new_c = self.get_col()
         return self.world.level.what_is_at(new_r, new_c) == 'air'
     
     def check_destructable(self, next_direction):
