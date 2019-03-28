@@ -71,8 +71,8 @@ class Player:
                 if self.check_fall():
                     self.move(DIR_DOWN)
             self.wait_time = 0
-        self.depth_score = (self.starting_point - self.y) // 96
-        self.score = self.pickup_score + self.battle_score + self.depth_score
+        self.depth_score = (self.starting_point - self.y) // 32
+        self.score = self.pickup_score + self.battle_score + (self.depth_score//3)
 
     def get_row(self):
         return 18 - ceil(self.y / self.GRID)
@@ -109,28 +109,15 @@ class Level:
         for num in range(n):
             temp += self.choose_map()
         return temp
-    
-    def choice_n_time(self, n):
-        possibility = random_with_weight([('.',7,),('D',6,),('#',4),('G',1)])
-        temp = []
-        for num in range(n):
-            temp.append(choice(possibility))
-        return temp
-    
-    def wild_random(self, level):
-        if level == 1:
-            return ''.join(['$$#'] + self.choice_n_time(3) + ['#$$'])
-        elif level == 2:
-            return ''.join(['$#'] + self.choice_n_time(5) + ['#$'])
 
     def choose_map(self):
         """
         pick random map that gives 2 block
         """
         if self.world.player.depth_score < LEV_1_CAP:
-            return [self.wild_random(1), choice(level_1_map)]
+            return [wild_random(1), choice(level_1_map)]
         else:
-            return [self.wild_random(2), choice(level_2_map)]
+            return [wild_random(2), choice(level_2_map)]
 
     def what_is_at(self, r, c):
         """
