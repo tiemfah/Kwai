@@ -28,13 +28,13 @@ class Player:
     can hit (dirt, enemy, coin),
     can fall
     """
-    MOVE_WAIT = 0.1
+    MOVE_WAIT = 0.13
 
     def __init__(self, world, x, y):
         self.world = world
         self.x = x
         self.y = y
-        self.wait_time = 0 
+        self.wait_time = 0
         self.direction = DIR_STILL
         self.next_direction = DIR_STILL
         self.GRID = GRID
@@ -48,7 +48,8 @@ class Player:
         self.x += GRID * DIR_OFFSETS[direction][0]
         self.y -= GRID * DIR_OFFSETS[direction][1]
 
-    def update(self):
+    def update(self, delta):
+        self.wait_time += delta
         if self.next_direction != DIR_STILL:
             if self.check_moveable(self.next_direction):
                 self.direction = self.next_direction
@@ -58,9 +59,9 @@ class Player:
                 self.destroy(self.next_direction)
                 self.next_direction = DIR_STILL
         else:
-            if self.check_fall():
+            if self.check_fall() and self.wait_time > Player.MOVE_WAIT:
+                self.wait_time = 0
                 self.move(DIR_DOWN)
-                self.
         self.depth_score = (self.starting_point - self.y) // 32
 
     def get_row(self):
@@ -205,7 +206,7 @@ class World:
         self.level = Level(self)
 
     def update(self, delta):
-        self.player.update()
+        self.player.update(delta)
         self.level.update()
 
     def on_key_press(self, key, key_modifiers):
