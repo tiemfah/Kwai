@@ -42,7 +42,7 @@ class Player:
         self.depth_score = 0
         self.pickup_score = 0
         self.battle_score = 0
-        self.score = self.depth_score + self.pickup_score + self.battle_score
+        self.score = 0
 
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
@@ -63,6 +63,7 @@ class Player:
                 self.wait_time = 0
                 self.move(DIR_DOWN)
         self.depth_score = (self.starting_point - self.y) // 32
+        self.score = self.depth_score + self.pickup_score + self.battle_score
 
     def get_row(self):
         return 18 - ceil(self.y / self.GRID)
@@ -166,10 +167,10 @@ class Level:
         """
         pick random map that gives 2 block
         """
-        if self.world.player.pickup_score < Level.LEV_1_CAP:
+        if self.world.player.depth_score < Level.LEV_1_CAP:
             return [self.wild_random(1), choice(Level.level_1_map)]
         else:
-            return [Level.level_2_map[0], choice(Level.level_2_map)]
+            return [self.wild_random(2), choice(Level.level_2_map)]
 
     def what_is_at(self, r, c):
         """
