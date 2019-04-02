@@ -1,3 +1,5 @@
+"TODO add trap, enemy"
+
 import arcade.key
 from random import choice, choices
 from math import ceil, floor
@@ -59,11 +61,12 @@ class Player:
                     self.pickup_score += 1
                 elif next_block == 'dirt':
                     self.remove_this(self.next_direction)
-                elif next_block == 'air':
+                elif next_block in ['air', 'trap']:
                     self.direction = self.next_direction
                     self.move(self.direction)
                 self.next_direction = DIR_STILL
             else:
+                next_block = self.what_next(DIR_DOWN)
                 if next_block == 'gold':
                     self.remove_this(self.next_direction)
                     self.next_direction = DIR_STILL
@@ -83,7 +86,7 @@ class Player:
     def check_fall(self):
         new_r = self.get_row()+1
         new_c = self.get_col()
-        return self.world.level.what_is_at(new_r, new_c) in ['air', 'gold']
+        return self.world.level.what_is_at(new_r, new_c) in ['air', 'gold', 'trap']
     
     def remove_this(self, next_direction):
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
@@ -129,6 +132,8 @@ class Level:
             return "sky"
         elif self.map[r][c] == "#":
             return "stone"
+        elif self.map[r][c] == 'T':
+            return "trap"
         elif self.map[r][c] == ".":
             return "air"
         elif self.map[r][c] == "G":

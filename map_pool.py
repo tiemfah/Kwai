@@ -21,11 +21,11 @@ def random_with_weight(lst):
     return temp
 
 def choice_n_time(n):
-        possibility = random_with_weight([('.',7,),('D',6,),('#',4),('G',1)])
+        possibility = random_with_weight([('.',12,), ('D',11), ('#',7), ('G',2), ('T', 1)])
         temp = []
         for num in range(n):
             temp.append(choice(possibility))
-        if True in [('#' != x) for x in temp]:
+        if True in [('#' != x or 'T' != x) for x in temp]:
             return temp
         else:
             return choice_n_time(n)

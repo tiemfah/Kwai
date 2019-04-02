@@ -33,6 +33,7 @@ class LevelDrawer():
         self.dirt_sprite = ModelSprite('resources/images/dirt.png')
         self.stone_sprite = ModelSprite('resources/images/stone.png')
         self.gold_sprite = ModelSprite('resources/images/gold.png')
+        self.trap_sprite = ModelSprite('resources/images/trap.png')
 
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -56,6 +57,8 @@ class LevelDrawer():
                     self.draw_sprite(self.stone_sprite, r, c)
                 elif identity == "gold":
                     self.draw_sprite(self.gold_sprite, r, c)
+                elif identity == "trap":
+                    self.draw_sprite(self.trap_sprite, r, c)
 
     def update(self, Levelmap):
         self.level = Levelmap
