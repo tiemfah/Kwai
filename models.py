@@ -97,15 +97,43 @@ class Player:
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
         return self.world.level.what_is_at(new_r, new_c)
+    
+    def die(self):
+        print('dedededed')
+
+
+class Trap:
+    def __init__(self, world, r, c):
+        self.world = world
+        self.r = r
+        self.c = c
+        self.is_near = self.is_player_near_me()
+    
+    def did_player_hit_me(self):
+        return self.r == self.world.player.get_row() and self.c == self.world.player.get_col()
+    
+    def is_player_near_me(self):
+        """
+        show true color!
+        """
+        if self.world.player.get_row()-1<= self.r <= self.world.player.get_row()+1:
+            if self.world.player.get_col()-1 <= self.c <= self.world.player.get_col()+1:
+                return True
+    
+    def update(self):
+        self.is_near = self.is_player_near_me()
+        if self.did_player_hit_me():
+            self.world.player.die()
+
 
 class Level:
-    
-    def __init__(self, worldx):
-        self.world = worldx
+    def __init__(self, world):
+        self.world = world
         self.map = self.start_map(9)
         self.height = len(self.map)
         self.width = len(self.map[0])
         self.previous_score = self.world.player.depth_score
+        self.trap_list = []
 
     def start_map(self, n):
         temp = []
@@ -151,6 +179,9 @@ class Level:
             self.height = len(self.map)
             self.width = len(self.map[0])
             self.previous_score = self.world.player.depth_score
+        
+        for trap in self.trap_list:
+            trap.update()
 
 
 class World:

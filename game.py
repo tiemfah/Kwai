@@ -33,7 +33,6 @@ class LevelDrawer():
         self.dirt_sprite = ModelSprite('resources/images/dirt.png')
         self.stone_sprite = ModelSprite('resources/images/stone.png')
         self.gold_sprite = ModelSprite('resources/images/gold.png')
-        self.trap_sprite = ModelSprite('resources/images/trap.png')
 
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -58,12 +57,37 @@ class LevelDrawer():
                 elif identity == "gold":
                     self.draw_sprite(self.gold_sprite, r, c)
                 elif identity == "trap":
-                    self.draw_sprite(self.trap_sprite, r, c)
+                    self.level.trap_list.append(Trap(self.level.world, r, c))
 
     def update(self, Levelmap):
         self.level = Levelmap
         self.width = self.level.width
         self.height = self.level.height
+
+
+class TrapDrawer():
+    def __init__(self, world):
+        self.world = world
+        self.trap_list = world.level.trap_list
+        self.trap_sprite = ModelSprite('resources/images/trap.png')
+        self.trap_alerted_sprite = ModelSprite('resources/images/trap_alert.png')
+    
+    def get_sprite_position(self, r, c):
+        x = c * GRID + (GRID // 2)
+        y = SCREEN_HEIGHT - (r * GRID + GRID // 2)
+        return x, y
+
+    def draw_sprite(self, sprite, r, c):
+        x, y = self.get_sprite_position(r, c)
+        sprite.set_position(x, y)
+        sprite.draw()
+
+    def draw(self):
+        for trap in self.trap_list:
+            if trap.is_near:
+                self.draw_sprite(self.trap_alerted_sprite, trap.r, trap.c)
+            else:
+                self.draw_sprite(self.trap_sprite, trap.r, trap.c)
 
 
 class GameWindow(arcade.Window):
@@ -75,8 +99,8 @@ class GameWindow(arcade.Window):
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = ModelSprite('resources/images/mc.png',
                                   model=self.world.player)
-
         self.map = LevelDrawer(self.world.level)
+        self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
 
     def change_view(self):
@@ -106,6 +130,7 @@ class GameWindow(arcade.Window):
         arcade.start_render()
 
         self.level_drawer.draw()
+        self.traps.draw()
         self.player.draw()
 
         # show score
