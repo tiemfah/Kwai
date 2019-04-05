@@ -1,4 +1,4 @@
-"TODO add trap, enemy"
+"TODO pop used element"
 
 import arcade.key
 from random import choice, choices
@@ -99,7 +99,7 @@ class Player:
         return self.world.level.what_is_at(new_r, new_c)
     
     def die(self):
-        print('dedededed')
+        pass
 
 
 class Trap:
