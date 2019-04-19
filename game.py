@@ -92,8 +92,8 @@ class TrapDrawer():
 
 
 class GameWindow(arcade.Window):
-    def __init__(self, width, height):
-        super().__init__(width, height)
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
 
         arcade.set_background_color(arcade.color.WHITE)
 
@@ -160,7 +160,7 @@ class GameWindow(arcade.Window):
 
 
 def main():
-    window = GameWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
+    window = GameWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     arcade.set_window(window)
     arcade.run()
 
