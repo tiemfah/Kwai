@@ -29,7 +29,7 @@ def choice_n_time(n, hardness):
         if True in [('#' != x and 'T' != x) for x in temp]:
             return temp
         else:
-            return choice_n_time(n)
+            return choice_n_time(n, hardness)
 
 def wild_random(level, hardness):
     if level == 1:
