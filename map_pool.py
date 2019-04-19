@@ -1,4 +1,5 @@
 from random import choice
+
 LEV_1_CAP = 20
 LEV_2_CAP = 40
 
@@ -20,8 +21,8 @@ def random_with_weight(lst):
             temp += ele[0]
     return temp
 
-def choice_n_time(n):
-        possibility = random_with_weight([('.',12), ('D',11), ('#',7), ('G',2), ('T',1)])
+def choice_n_time(n, hardness):
+        possibility = random_with_weight([('.',12), ('D',11), ('#',7), ('G',2), ('T',int(1+hardness//15)])
         temp = []
         for num in range(n):
             temp.append(choice(possibility))
@@ -30,8 +31,8 @@ def choice_n_time(n):
         else:
             return choice_n_time(n)
 
-def wild_random(level):
+def wild_random(level, hardness):
     if level == 1:
-        return ''.join(['$$#'] + choice_n_time(3) + ['#$$'])
+        return ''.join(['$$#'] + choice_n_time(3, hardness) + ['#$$'])
     elif level == 2:
-        return ''.join(['$#'] + choice_n_time(5) + ['#$'])
+        return ''.join(['$#'] + choice_n_time(5, hardness) + ['#$'])

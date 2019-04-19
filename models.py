@@ -146,9 +146,9 @@ class Level:
         pick random map that gives 2 block
         """
         if self.world.player.depth_score < LEV_1_CAP:
-            return [wild_random(1), choice(level_1_map)]
+            return [wild_random(1, self.world.player.depth_score), choice(level_1_map)]
         else:
-            return [wild_random(2), choice(level_2_map)]
+            return [wild_random(2, self.world.player.depth_score), choice(level_2_map)]
 
     def what_is_at(self, r, c):
         """
