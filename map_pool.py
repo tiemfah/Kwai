@@ -22,7 +22,7 @@ def random_with_weight(lst):
     return temp
 
 def choice_n_time(n, hardness):
-        possibility = random_with_weight([('.',12), ('D',11), ('#',7), ('G',2), ('T',int(1+hardness//15)])
+        possibility = random_with_weight([('.',12), ('D',11), ('#',7), ('G',2), ('T',hardness//15)])
         temp = []
         for num in range(n):
             temp.append(choice(possibility))
