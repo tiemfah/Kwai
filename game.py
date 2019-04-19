@@ -128,22 +128,34 @@ class GameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
+        if not self.world.game_over:
+            self.level_drawer.draw()
+            self.traps.draw()
+            self.player.draw()
 
-        self.level_drawer.draw()
-        self.traps.draw()
-        self.player.draw()
-
-        # show score
-        output = f"Score: {self.world.player.score}"
-        arcade.draw_text(output, SCREEN_WIDTH // 1.4,
-                         self.world.player.y + GRID * 9, 
-                         arcade.color.BALL_BLUE, 14)
+        else:
+            arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.BLACK, 20)
+            arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH//3,self.world.player.y+30, arcade.color.GOLD, 20)
+            arcade.draw_text('click to restart',SCREEN_WIDTH//4.4,self.world.player.y, arcade.color.BLACK, 20)
 
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)
 
     def on_key_release(self, key, modifiers):
         self.world.on_key_release()
+    
+    def on_mouse_release(self, x, y, button, modifiers):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            if self.world.game_over:
+                self.restart()
+    
+    def restart(self):
+        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.player = ModelSprite('resources/images/mc.png',
+                                  model=self.world.player)
+        self.map = LevelDrawer(self.world.level)
+        self.traps = TrapDrawer(self.world)
+        self.view_bottom = 0
 
 
 def main():

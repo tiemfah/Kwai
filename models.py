@@ -99,7 +99,7 @@ class Player:
         return self.world.level.what_is_at(new_r, new_c)
     
     def die(self):
-        pass
+        self.world.game_over = True
 
 
 class Trap:
@@ -190,6 +190,7 @@ class World:
         self.height = height
         self.player = Player(self, GRID // 2 + 3 * GRID, GRID * 17 + GRID // 2)
         self.level = Level(self)
+        self.game_over = False
 
     def update(self, delta):
         self.player.update(delta)
