@@ -46,7 +46,8 @@ class LevelDrawer():
         sprite.draw()
 
     def draw(self):
-        for r in range(self.height):
+        start = self.level.world.player.depth_score-9 if self.level.world.player.depth_score > 10 else 0
+        for r in range(start, self.height):
             for c in range(self.width):
                 identity = self.level.what_is_at(r, c)
                 if identity == "sky":
@@ -62,7 +63,6 @@ class LevelDrawer():
 
     def update(self, Levelmap):
         self.level = Levelmap
-        self.width = self.level.width
         self.height = self.level.height
 
 
@@ -82,6 +82,9 @@ class TrapDrawer():
         x, y = self.get_sprite_position(r, c)
         sprite.set_position(x, y)
         sprite.draw()
+    
+    def in_screen(self, r):
+        return self.world.player.x - SCREEN_WIDTH//2<= SCREEN_HEIGHT - (r * GRID + GRID // 2) <= self.world.player.x + SCREEN_HEIGHT//2
 
     def draw(self):
         for trap in self.trap_list:
@@ -111,7 +114,6 @@ class GameWindow(arcade.Window):
             self.view_bottom += self.world.player.y + 16 - top_bndry
             changed = True
 
-        # Scroll down
         bottom_bndry = self.view_bottom + VIEWPORT_MARGIN
         if self.world.player.y - 16 < bottom_bndry:
             self.view_bottom -= bottom_bndry - self.world.player.y - 16
@@ -124,16 +126,15 @@ class GameWindow(arcade.Window):
 
     def update(self, delta):
         self.world.update(delta)
-        self.level_drawer = LevelDrawer(self.world.level)
+        self.map.update(self.world.level)
         self.change_view()
 
     def on_draw(self):
         arcade.start_render()
         if not self.world.game_over:
-            self.level_drawer.draw()
+            self.map.draw()
             self.traps.draw()
             self.player.draw()
-
         else:
             arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.BLACK, 20)
             arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH//3,self.world.player.y+30, arcade.color.GOLD, 20)
@@ -152,8 +153,7 @@ class GameWindow(arcade.Window):
     
     def restart(self):
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.player = ModelSprite('resources/images/mc.png',
-                                  model=self.world.player)
+        self.player = ModelSprite('resources/images/mc.png', model=self.world.player)
         self.map = LevelDrawer(self.world.level)
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0

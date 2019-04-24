@@ -6,6 +6,7 @@ from math import ceil, floor
 from map_pool import *
 
 GRID = 32
+SCREEN_HEIGHT = GRID * 18
 
 DIR_STILL = 0
 DIR_UP = 1
@@ -75,7 +76,7 @@ class Player:
                     self.move(DIR_DOWN)
             self.wait_time = 0
         self.depth_score = (self.starting_point - self.y) // 32
-        self.score = self.pickup_score + self.battle_score + (self.depth_score//3)
+        self.score = self.pickup_score + self.depth_score//3
 
     def get_row(self):
         return 18 - ceil(self.y / self.GRID)
@@ -134,6 +135,12 @@ class Level:
         self.width = len(self.map[0])
         self.previous_score = self.world.player.depth_score
         self.trap_list = []
+        self.item_dict = {"D": 'dirt',
+                          "$": 'sky',
+                          "#": 'stone',
+                          "T": 'trap',
+                          ".": 'air',
+                          'G': 'gold'}
 
     def start_map(self, n):
         temp = []
@@ -154,18 +161,7 @@ class Level:
         """
         name implies
         """
-        if self.map[r][c] == "D":
-            return "dirt"
-        elif self.map[r][c] == "$":
-            return "sky"
-        elif self.map[r][c] == "#":
-            return "stone"
-        elif self.map[r][c] == 'T':
-            return "trap"
-        elif self.map[r][c] == ".":
-            return "air"
-        elif self.map[r][c] == "G":
-            return "gold"
+        return self.item_dict[self.map[r][c]]
     
     def remove_this(self, r, c):
         self.map[r] = self.map[r][:c]+'.'+self.map[r][c+1:]
@@ -174,13 +170,15 @@ class Level:
         """
         see if map need new "block"
         """
-        if self.previous_score + 1 == self.world.player.depth_score:
+        if self.previous_score + 2 == self.world.player.depth_score:
             self.map += self.choose_map()
             self.height = len(self.map)
             self.width = len(self.map[0])
             self.previous_score = self.world.player.depth_score
         
         for trap in self.trap_list:
+            if SCREEN_HEIGHT - (trap.r * GRID + GRID // 2) > self.world.player.y + GRID*9:
+                self.trap_list.remove(trap)
             trap.update()
 
 
