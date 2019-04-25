@@ -10,7 +10,7 @@ SCREEN_WIDTH = GRID * 9
 SCREEN_HEIGHT = GRID * 18
 VIEWPORT_MARGIN = GRID * 8
 
-"""FPS""""
+"""FPS"""
 class FPSCounter:
     def __init__(self):
         self.time = time.perf_counter()
