@@ -1,4 +1,6 @@
 import arcade
+import time
+import collections
 from models import *
 
 GRID = 32
@@ -7,6 +9,25 @@ SCREEN_TITLE = 'LAMA X'
 SCREEN_WIDTH = GRID * 9
 SCREEN_HEIGHT = GRID * 18
 VIEWPORT_MARGIN = GRID * 8
+
+"""FPS""""
+class FPSCounter:
+    def __init__(self):
+        self.time = time.perf_counter()
+        self.frame_times = collections.deque(maxlen=60)
+
+    def tick(self):
+        t1 = time.perf_counter()
+        dt = t1 - self.time
+        self.time = t1
+        self.frame_times.append(dt)
+
+    def get_fps(self):
+        total_time = sum(self.frame_times)
+        if total_time == 0:
+            return 0
+        else:
+            return len(self.frame_times) / sum(self.frame_times)
 
 
 class ModelSprite(arcade.Sprite):
@@ -105,6 +126,9 @@ class GameWindow(arcade.Window):
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
 
+        """FPS"""
+        self.fps = FPSCounter()
+
     def change_view(self):
         changed = True
         top_bndry = self.view_bottom + SCREEN_HEIGHT - VIEWPORT_MARGIN
@@ -133,6 +157,10 @@ class GameWindow(arcade.Window):
             self.map.draw()
             self.traps.draw()
             self.player.draw()
+            
+            """FPS"""
+            arcade.draw_text(f'{self.fps.get_fps():.0f}', SCREEN_WIDTH//2, self.world.player.y+30, arcade.color.GOLD, 20)
+            self.fps.tick()
         else:
             arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.BLACK, 20)
             arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH//3,self.world.player.y+30, arcade.color.GOLD, 20)
