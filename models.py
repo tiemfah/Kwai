@@ -1,5 +1,3 @@
-"TODO pop used element"
-
 import arcade.key
 from random import choice, choices
 from math import ceil, floor
