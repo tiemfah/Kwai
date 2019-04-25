@@ -118,7 +118,8 @@ class GameWindow(arcade.Window):
         super().__init__(width, height, title)
 
         arcade.set_background_color(arcade.color.WHITE)
-
+        self.background = None
+        self.background = arcade.load_texture('resources/images/howto.png')
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = ModelSprite('resources/images/mc.png', model=self.world.player)
         self.map = LevelDrawer(self.world.level)
@@ -156,7 +157,8 @@ class GameWindow(arcade.Window):
             self.map.draw()
             self.traps.draw()
             self.player.draw()
-            
+            if self.world.player.depth_score < 10:
+                arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.starting_point+144, 288, 256, self.background)
             # """FPS"""
             # arcade.draw_text(f'{self.fps.get_fps():.0f}', SCREEN_WIDTH//2, self.world.player.y+30, arcade.color.GOLD, 20)
             # self.fps.tick()
