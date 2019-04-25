@@ -41,11 +41,9 @@ class Player:
         self.wait_time = 0
         self.direction = DIR_STILL
         self.next_direction = DIR_STILL
-        self.GRID = GRID
         self.starting_point = y
         self.depth_score = 0
         self.pickup_score = 0
-        self.battle_score = 0
         self.score = 0
 
     def move(self, direction):
@@ -79,15 +77,13 @@ class Player:
         self.score = self.pickup_score + self.depth_score//3
 
     def get_row(self):
-        return 18 - ceil(self.y / self.GRID)
+        return 18 - ceil(self.y / GRID)
 
     def get_col(self):
-        return floor(self.x / self.GRID)
+        return floor(self.x / GRID)
     
     def check_fall(self):
-        new_r = self.get_row()+1
-        new_c = self.get_col()
-        return self.world.level.what_is_at(new_r, new_c) in ['air', 'gold', 'trap']
+        return self.world.level.what_is_at(self.get_row()+1, self.get_col()) in ['air', 'gold', 'trap']
     
     def remove_this(self, next_direction):
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
@@ -135,6 +131,7 @@ class Level:
         self.width = len(self.map[0])
         self.previous_score = self.world.player.depth_score
         self.trap_list = []
+        self.trap_list_index = []
         self.item_dict = {"D": 'dirt',
                           "$": 'sky',
                           "#": 'stone',
@@ -158,22 +155,15 @@ class Level:
             return [wild_random(2, self.world.player.depth_score), choice(level_2_map)]
 
     def what_is_at(self, r, c):
-        """
-        name implies
-        """
         return self.item_dict[self.map[r][c]]
     
     def remove_this(self, r, c):
         self.map[r] = self.map[r][:c]+'.'+self.map[r][c+1:]
 
     def update(self):
-        """
-        see if map need new "block"
-        """
         if self.previous_score + 2 == self.world.player.depth_score:
             self.map += self.choose_map()
             self.height = len(self.map)
-            self.width = len(self.map[0])
             self.previous_score = self.world.player.depth_score
         
         for trap in self.trap_list:

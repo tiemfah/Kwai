@@ -29,11 +29,10 @@ class LevelDrawer():
         self.level = levelmap
         self.width = self.level.width
         self.height = self.level.height
-
-        self.sky_sprite = ModelSprite('resources/images/sky.png')
-        self.dirt_sprite = ModelSprite('resources/images/dirt.png')
-        self.stone_sprite = ModelSprite('resources/images/stone.png')
-        self.gold_sprite = ModelSprite('resources/images/gold.png')
+        self.drawing_plan = {'sky': ModelSprite('resources/images/sky.png'),
+                             'dirt': ModelSprite('resources/images/dirt.png'),
+                             'stone': ModelSprite('resources/images/stone.png'),
+                             'gold': ModelSprite('resources/images/gold.png')}
 
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -46,24 +45,23 @@ class LevelDrawer():
         sprite.draw()
 
     def draw(self):
-        start = self.level.world.player.depth_score-9 if self.level.world.player.depth_score > 10 else 0
-        for r in range(start, self.height):
+        start = self.level.world.player.depth_score - 10 if self.level.world.player.depth_score > 10 else 0
+        stop = self.level.world.player.depth_score + 8 if self.level.world.player.depth_score > 10 else 18
+        for r in range(start, stop):
             for c in range(self.width):
                 identity = self.level.what_is_at(r, c)
-                if identity == "sky":
-                    self.draw_sprite(self.sky_sprite, r, c)
-                elif identity == "dirt":
-                    self.draw_sprite(self.dirt_sprite, r, c)
-                elif identity == "stone":
-                    self.draw_sprite(self.stone_sprite, r, c)
-                elif identity == "gold":
-                    self.draw_sprite(self.gold_sprite, r, c)
-                elif identity == "trap":
-                    self.level.trap_list.append(Trap(self.level.world, r, c))
+                if identity == "trap":
+                    if (r,c) not in self.level.trap_list_index:
+                        self.level.trap_list.append(Trap(self.level.world, r, c))
+                        self.level.trap_list_index.append((r,c))
+                elif identity == "air":
+                    pass
+                else:
+                    self.draw_sprite(self.drawing_plan[identity], r, c)
+                    
 
     def update(self, Levelmap):
         self.level = Levelmap
-        self.height = self.level.height
 
 
 class TrapDrawer():
