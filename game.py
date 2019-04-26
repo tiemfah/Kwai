@@ -1,6 +1,4 @@
 import arcade
-import time
-import collections
 from models import *
 
 GRID = 32
@@ -9,26 +7,6 @@ SCREEN_TITLE = 'LAMA X'
 SCREEN_WIDTH = GRID * 9
 SCREEN_HEIGHT = GRID * 18
 VIEWPORT_MARGIN = GRID * 8
-
-# """FPS"""
-# class FPSCounter:
-#     def __init__(self):
-#         self.time = time.perf_counter()
-#         self.frame_times = collections.deque(maxlen=60)
-
-#     def tick(self):
-#         t1 = time.perf_counter()
-#         dt = t1 - self.time
-#         self.time = t1
-#         self.frame_times.append(dt)
-
-#     def get_fps(self):
-#         total_time = sum(self.frame_times)
-#         if total_time == 0:
-#             return 0
-#         else:
-#             return len(self.frame_times) / sum(self.frame_times)
-
 
 class ModelSprite(arcade.Sprite):
     def __init__(self, *args, **kwargs):
@@ -50,10 +28,29 @@ class LevelDrawer():
         self.level = levelmap
         self.width = self.level.width
         self.height = self.level.height
-        self.drawing_plan = {'sky': ModelSprite('resources/images/sky.png'),
-                             'dirt': ModelSprite('resources/images/dirt.png'),
-                             'stone': ModelSprite('resources/images/stone.png'),
-                             'gold': ModelSprite('resources/images/gold.png')}
+        self.model_dict = {'0':ModelSprite('resource/img/0.png'),
+                           '1':ModelSprite('resource/img/1.png'),
+                           '2':ModelSprite('resource/img/2.png'),
+                           '3':ModelSprite('resource/img/3.png'),
+                           '4':ModelSprite('resource/img/4.png'),
+                           '5':ModelSprite('resource/img/5.png'),
+                           '6':ModelSprite('resource/img/6.png'),
+                           '7':ModelSprite('resource/img/7.png'),
+                           '8':ModelSprite('resource/img/8.png'),
+                           '9':ModelSprite('resource/img/9.png'),
+                           '10':ModelSprite('resource/img/10.png'),
+                           '11':ModelSprite('resource/img/11.png'),
+                           '14':ModelSprite('resource/img/14.png'),
+                           '15':ModelSprite('resource/img/15.png'),
+                           '16':ModelSprite('resource/img/16.png'),
+                           '17':ModelSprite('resource/img/17.png'),
+                           '18':ModelSprite('resource/img/18.png'),
+                           '19':ModelSprite('resource/img/19.png'),
+                           '20':ModelSprite('resource/img/20.png'),
+                           '21':ModelSprite('resource/img/21.png'),
+                           '22':ModelSprite('resource/img/22.png'),
+                           '23':ModelSprite('resource/img/23.png'),
+                           }
 
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -66,31 +63,29 @@ class LevelDrawer():
         sprite.draw()
 
     def draw(self):
-        start = self.level.world.player.depth_score - 10 if self.level.world.player.depth_score > 10 else 0
-        stop = self.level.world.player.depth_score + 8 if self.level.world.player.depth_score > 10 else 18
-        for r in range(start, stop):
+        # start = self.level.world.player.depth_score - 10 if self.level.world.player.depth_score > 10 else 0
+        # stop = self.level.world.player.depth_score + 8 if self.level.world.player.depth_score > 10 else 17
+        for r in range(self.height):
             for c in range(self.width):
                 identity = self.level.what_is_at(r, c)
                 if identity == "trap":
                     if (r,c) not in self.level.trap_list_index:
                         self.level.trap_list.append(Trap(self.level.world, r, c))
                         self.level.trap_list_index.append((r,c))
-                elif identity == "air":
+                elif identity == 'air':
                     pass
                 else:
-                    self.draw_sprite(self.drawing_plan[identity], r, c)
-                    
+                    self.draw_sprite(self.model_dict[self.level.map[r][c]], r, c)
 
     def update(self, Levelmap):
         self.level = Levelmap
+        self.height = self.level.height
 
 
 class TrapDrawer():
     def __init__(self, world):
         self.world = world
         self.trap_list = world.level.trap_list
-        self.trap_sprite = ModelSprite('resources/images/trap.png')
-        self.trap_alerted_sprite = ModelSprite('resources/images/trap_alert.png')
     
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -108,26 +103,22 @@ class TrapDrawer():
     def draw(self):
         for trap in self.trap_list:
             if trap.is_near:
-                self.draw_sprite(self.trap_alerted_sprite, trap.r, trap.c)
+                self.draw_sprite(ModelSprite('resource/img/trap_alert.png'), trap.r, trap.c)
             else:
-                self.draw_sprite(self.trap_sprite, trap.r, trap.c)
+                self.draw_sprite(ModelSprite(f'resource/img/{self.world.level.map[trap.r][trap.c]}.png'), trap.r, trap.c)
 
 
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
 
-        arcade.set_background_color(arcade.color.WHITE)
-        self.background = None
-        self.background = arcade.load_texture('resources/images/howto.png')
+        arcade.set_background_color((150,102,70))
+        self.background = arcade.load_texture('resource/img/howto.png')
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.player = ModelSprite('resources/images/mc.png', model=self.world.player)
+        self.player = ModelSprite('resource/img/player.png', model=self.world.player)
         self.map = LevelDrawer(self.world.level)
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
-
-        # """FPS"""
-        # self.fps = FPSCounter()
 
     def change_view(self):
         changed = True
@@ -159,9 +150,6 @@ class GameWindow(arcade.Window):
             self.player.draw()
             if self.world.player.depth_score < 10:
                 arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.starting_point+144, 288, 256, self.background)
-            # """FPS"""
-            # arcade.draw_text(f'{self.fps.get_fps():.0f}', SCREEN_WIDTH//2, self.world.player.y+30, arcade.color.GOLD, 20)
-            # self.fps.tick()
         else:
             arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.BLACK, 20)
             arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH//3,self.world.player.y+30, arcade.color.GOLD, 20)
@@ -180,7 +168,7 @@ class GameWindow(arcade.Window):
     
     def restart(self):
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.player = ModelSprite('resources/images/mc.png', model=self.world.player)
+        self.player = ModelSprite('resource/img/player.png', model=self.world.player)
         self.map = LevelDrawer(self.world.level)
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0

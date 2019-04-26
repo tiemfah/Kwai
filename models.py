@@ -25,11 +25,6 @@ KEY_MAP = {arcade.key.W: DIR_UP,
 
 
 class Player:
-    """
-    can move,
-    can hit (dirt, enemy, coin),
-    can fall
-    """
     MOVE_WAIT = 0.15
 
     def __init__(self, world, x, y):
@@ -53,7 +48,7 @@ class Player:
         if self.wait_time > Player.MOVE_WAIT:
             next_block = self.what_next(self.next_direction)
             if self.next_direction != DIR_STILL:
-                if next_block == 'gold':
+                if next_block == 'torch':
                     self.remove_this(self.next_direction)
                     self.pickup_score += 1
                 elif next_block == 'dirt':
@@ -64,7 +59,7 @@ class Player:
                 self.next_direction = DIR_STILL
             else:
                 next_block = self.what_next(DIR_DOWN)
-                if next_block == 'gold':
+                if next_block == 'torch':
                     self.remove_this(self.next_direction)
                     self.next_direction = DIR_STILL
                     self.pickup_score += 1
@@ -81,7 +76,7 @@ class Player:
         return floor(self.x / GRID)
     
     def check_fall(self):
-        return self.world.level.what_is_at(self.get_row()+1, self.get_col()) in ['air', 'gold', 'trap']
+        return self.world.level.what_is_at(self.get_row()+1, self.get_col()) in ['air', 'torch', 'trap']
     
     def remove_this(self, next_direction):
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
@@ -124,43 +119,58 @@ class Trap:
 class Level:
     def __init__(self, world):
         self.world = world
-        self.map = self.start_map(9)
+        self.map = self.start_map()
         self.height = len(self.map)
         self.width = len(self.map[0])
         self.previous_score = self.world.player.depth_score
         self.trap_list = []
         self.trap_list_index = []
-        self.item_dict = {"D": 'dirt',
-                          "$": 'sky',
-                          "#": 'stone',
-                          "T": 'trap',
+        self.item_dict = {'-1': 'air',
+                          '0': 'dirt',
+                          '1': 'dirt',
+                          '2': 'dirt',
+                          '3': 'dirt',
+                          '4': 'dirt',
+                          '5': 'dirt',
+                          '6': 'dirt',
+                          '7': 'dirt',
+                          '8': 'dirt',
+                          '9': 'stone',
+                          '10': 'stone',
+                          '11': 'stone',
+                          '14': 'torch',
+                          '15': 'trap',
+                          '16': 'trap',
+                          '17': 'trap',
+                          '18': 'trap',
+                          '19': 'trap',
+                          '20': 'trap',
+                          '21': 'trap',
+                          '22': 'trap',
+                          '23': 'trap',
+                          '$': 'sky',
+                          '#': 'stone',
+                          'D': 'dirt',
+                          'T': 'trap',
                           ".": 'air',
-                          'G': 'gold'}
+                          'G': 'torch'}
 
-    def start_map(self, n):
-        temp = []
-        for num in range(n):
-            temp += self.choose_map()
-        return temp
-
+    def start_map(self):
+        return map_pool_list[0]
+    
     def choose_map(self):
-        """
-        pick random map that gives 2 block
-        """
-        if self.world.player.depth_score < LEV_1_CAP:
-            return [wild_random(1, self.world.player.depth_score), choice(level_1_map)]
-        else:
-            return [wild_random(2, self.world.player.depth_score), choice(level_2_map)]
+        for row in choice(map_pool_list):
+            self.map.append(row)
 
     def what_is_at(self, r, c):
         return self.item_dict[self.map[r][c]]
     
     def remove_this(self, r, c):
-        self.map[r] = self.map[r][:c]+'.'+self.map[r][c+1:]
+        self.map[r][c] = '-1'
 
     def update(self):
-        if self.previous_score + 2 == self.world.player.depth_score:
-            self.map += self.choose_map()
+        if self.previous_score + 9 == self.world.player.depth_score:
+            self.choose_map()
             self.height = len(self.map)
             self.previous_score = self.world.player.depth_score
         
