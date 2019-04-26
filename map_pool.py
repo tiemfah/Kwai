@@ -10,3 +10,6 @@ def file_to_array(file):
 
 for file in glob.glob("resource/mapping/*.csv"):
     map_pool_list.append(file_to_array(file))
+
+def get_map():
+    return choice(map_pool_list)
