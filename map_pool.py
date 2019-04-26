@@ -8,6 +8,5 @@ def file_to_array(file):
     table = [row.split(",") for row in temp]
     return table
 
-#os.chdir('resource\mapping')
 for file in glob.glob("resource/mapping/*.csv"):
     map_pool_list.append(file_to_array(file))

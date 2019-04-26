@@ -156,7 +156,7 @@ class Level:
                           'G': 'torch'}
 
     def start_map(self):
-        return map_pool_list[0]
+        return map_pool_list[0]+choice(map_pool_list)
     
     def choose_map(self):
         for row in choice(map_pool_list):

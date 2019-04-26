@@ -40,17 +40,7 @@ class LevelDrawer():
                            '9':ModelSprite('resource/img/9.png'),
                            '10':ModelSprite('resource/img/10.png'),
                            '11':ModelSprite('resource/img/11.png'),
-                           '14':ModelSprite('resource/img/14.png'),
-                           '15':ModelSprite('resource/img/15.png'),
-                           '16':ModelSprite('resource/img/16.png'),
-                           '17':ModelSprite('resource/img/17.png'),
-                           '18':ModelSprite('resource/img/18.png'),
-                           '19':ModelSprite('resource/img/19.png'),
-                           '20':ModelSprite('resource/img/20.png'),
-                           '21':ModelSprite('resource/img/21.png'),
-                           '22':ModelSprite('resource/img/22.png'),
-                           '23':ModelSprite('resource/img/23.png'),
-                           }
+                           '14':ModelSprite('resource/img/14.png'),}
 
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -86,6 +76,16 @@ class TrapDrawer():
     def __init__(self, world):
         self.world = world
         self.trap_list = world.level.trap_list
+        self.trap_sprite_dict = {'15':ModelSprite('resource/img/15.png'),
+                           '16':ModelSprite('resource/img/16.png'),
+                           '17':ModelSprite('resource/img/17.png'),
+                           '18':ModelSprite('resource/img/18.png'),
+                           '19':ModelSprite('resource/img/19.png'),
+                           '20':ModelSprite('resource/img/20.png'),
+                           '21':ModelSprite('resource/img/21.png'),
+                           '22':ModelSprite('resource/img/22.png'),
+                           '23':ModelSprite('resource/img/23.png'),
+                           'alerted':ModelSprite('resource/img/trap_alert.png')}
     
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -96,16 +96,13 @@ class TrapDrawer():
         x, y = self.get_sprite_position(r, c)
         sprite.set_position(x, y)
         sprite.draw()
-    
-    def in_screen(self, r):
-        return self.world.player.x - SCREEN_WIDTH//2<= SCREEN_HEIGHT - (r * GRID + GRID // 2) <= self.world.player.x + SCREEN_HEIGHT//2
 
     def draw(self):
         for trap in self.trap_list:
             if trap.is_near:
-                self.draw_sprite(ModelSprite('resource/img/trap_alert.png'), trap.r, trap.c)
+                self.draw_sprite(self.trap_sprite_dict['alerted'], trap.r, trap.c)
             else:
-                self.draw_sprite(ModelSprite(f'resource/img/{self.world.level.map[trap.r][trap.c]}.png'), trap.r, trap.c)
+                self.draw_sprite(self.trap_sprite_dict[self.world.level.map[trap.r][trap.c]], trap.r, trap.c)
 
 
 class GameWindow(arcade.Window):
