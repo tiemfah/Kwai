@@ -152,9 +152,9 @@ class Level:
                           ".": 'air',
                           'G': 'torch'}
 
-    def choose_map(self):
-        for row in choice(map_pool_list):
-            self.map.append(row)
+    # def choose_map(self):
+    #     for row in choice(map_pool_list):
+    #         self.map.append(row)
 
     def what_is_at(self, r, c):
         return self.item_dict[self.map[r][c]]
@@ -164,7 +164,7 @@ class Level:
 
     def update(self):
         if self.previous_score + 9 == self.world.player.depth_score:
-            self.choose_map()
+            add_map(self.map)
             self.height = len(self.map)
             self.previous_score = self.world.player.depth_score
         
