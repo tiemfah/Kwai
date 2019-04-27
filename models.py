@@ -37,6 +37,7 @@ class Player:
         self.depth_score = 0
         self.pickup_score = 0
         self.score = 0
+        self.torchlife = 100
 
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
@@ -44,12 +45,16 @@ class Player:
 
     def update(self, delta):
         self.wait_time += delta
+        self.pick_up_at_me()
         if self.wait_time > Player.MOVE_WAIT:
+            self.torchlife -= 1
+            if self.torchlife < 0:
+                self.die()
             next_block = self.what_next(self.next_direction)
             if self.next_direction != DIR_STILL:
                 if next_block == 'torch':
                     self.remove_this(self.next_direction)
-                    self.pickup_score += 1
+                    self.picked_torch()
                 elif next_block == 'dirt':
                     self.remove_this(self.next_direction)
                 elif next_block in ['air', 'trap']:
@@ -58,10 +63,6 @@ class Player:
                 self.next_direction = DIR_STILL
             else:
                 next_block = self.what_next(DIR_DOWN)
-                if next_block == 'torch':
-                    self.remove_this(self.next_direction)
-                    self.next_direction = DIR_STILL
-                    self.pickup_score += 1
                 if self.check_fall():
                     self.move(DIR_DOWN)
             self.wait_time = 0
@@ -87,6 +88,18 @@ class Player:
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
         return self.world.level.what_is_at(new_r, new_c)
     
+    def picked_torch(self):
+        self.pickup_score += 1
+        self.torchlife += 30
+        if self.torchlife > 100:
+            self.torchlife = 100
+    
+    def pick_up_at_me(self):
+        r, c = self.get_row(), self.get_col()
+        if self.world.level.what_is_at(r, c) == 'torch':
+            self.remove_this(DIR_STILL)
+            self.picked_torch()
+
     def die(self):
         self.world.game_over = True
 
@@ -102,8 +115,8 @@ class Trap:
         return self.r == self.world.player.get_row() and self.c == self.world.player.get_col()
     
     def is_player_near_me(self):
-        if self.world.player.get_row()-1<= self.r <= self.world.player.get_row()+1:
-            if self.world.player.get_col()-1 <= self.c <= self.world.player.get_col()+1:
+        if self.world.player.get_row()-2<= self.r <= self.world.player.get_row()+2:
+            if self.world.player.get_col()-2 <= self.c <= self.world.player.get_col()+2:
                 return True
     
     def update(self):
