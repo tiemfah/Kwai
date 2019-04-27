@@ -1,5 +1,4 @@
 import arcade.key
-from random import choice, choices
 from math import ceil, floor
 from map_pool import *
 
@@ -151,10 +150,6 @@ class Level:
                           'T': 'trap',
                           ".": 'air',
                           'G': 'torch'}
-
-    # def choose_map(self):
-    #     for row in choice(map_pool_list):
-    #         self.map.append(row)
 
     def what_is_at(self, r, c):
         return self.item_dict[self.map[r][c]]
