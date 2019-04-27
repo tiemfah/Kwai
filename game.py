@@ -53,9 +53,9 @@ class LevelDrawer():
         sprite.draw()
 
     def draw(self):
-        # start = self.level.world.player.depth_score - 10 if self.level.world.player.depth_score > 10 else 0
-        # stop = self.level.world.player.depth_score + 8 if self.level.world.player.depth_score > 10 else 17
-        for r in range(self.height):
+        start = self.level.world.player.depth_score - 10 if self.level.world.player.depth_score > 10 else 0
+        stop = self.level.world.player.depth_score + 8 if self.level.world.player.depth_score > 10 else 18
+        for r in range(start, stop):
             for c in range(self.width):
                 identity = self.level.what_is_at(r, c)
                 if identity == "trap":

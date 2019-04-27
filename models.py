@@ -143,13 +143,7 @@ class Level:
                           '20': 'trap',
                           '21': 'trap',
                           '22': 'trap',
-                          '23': 'trap',
-                          '$': 'sky',
-                          '#': 'stone',
-                          'D': 'dirt',
-                          'T': 'trap',
-                          ".": 'air',
-                          'G': 'torch'}
+                          '23': 'trap',}
 
     def what_is_at(self, r, c):
         return self.item_dict[self.map[r][c]]
