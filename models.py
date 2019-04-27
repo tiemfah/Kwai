@@ -90,7 +90,7 @@ class Player:
     
     def picked_torch(self):
         self.pickup_score += 1
-        self.torchlife += 30
+        self.torchlife += 40
         if self.torchlife > 100:
             self.torchlife = 100
     
