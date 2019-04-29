@@ -148,7 +148,8 @@ class GameWindow(arcade.Window):
             if self.world.player.depth_score < 10:
                 arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.starting_point+144, 288, 256, self.background)
             else:
-                arcade.draw_line(SCREEN_WIDTH//2-self.world.player.torchlife//2,self.world.player.y+250, SCREEN_WIDTH//2+self.world.player.torchlife//2,self.world.player.y+250, arcade.color.GOLD, 3 )
+                arcade.draw_line(SCREEN_WIDTH//2-self.world.player.torchlife//2,self.world.player.y+250, SCREEN_WIDTH//2+self.world.player.torchlife//2,self.world.player.y+250, arcade.color.GOLD, 3)
+                arcade.draw_rectangle_filled(SCREEN_WIDTH//2, self.world.player.y+48, SCREEN_WIDTH, SCREEN_HEIGHT, (5, 15, 32, self.world.player.opacity))
         else:
             arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.BLACK, 20)
             arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH//3,self.world.player.y+30, arcade.color.GOLD, 20)

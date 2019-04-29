@@ -38,6 +38,7 @@ class Player:
         self.pickup_score = 0
         self.score = 0
         self.torchlife = 100
+        self.opacity = 255
 
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
@@ -66,6 +67,7 @@ class Player:
                 if self.check_fall():
                     self.move(DIR_DOWN)
             self.wait_time = 0
+        self.get_opacity()
         self.depth_score = (self.starting_point - self.y) // 32
         self.score = self.pickup_score + self.depth_score//3
 
@@ -102,6 +104,12 @@ class Player:
 
     def die(self):
         self.world.game_over = True
+
+    def get_opacity(self):
+        if self.torchlife <= 0:
+            self.die()
+        else:
+            self.opacity = int(255 - 255*((self.world.player.torchlife-20)/100))
 
 
 class Trap:
