@@ -1,5 +1,6 @@
 import arcade.key
 from math import ceil, floor
+from time import time
 from map_pool import *
 
 GRID = 32
@@ -20,7 +21,7 @@ DIR_OFFSETS = {DIR_STILL: (0, 0),
 KEY_MAP = {arcade.key.W: DIR_UP,
            arcade.key.S: DIR_DOWN,
            arcade.key.A: DIR_LEFT,
-           arcade.key.D: DIR_RIGHT, }
+           arcade.key.D: DIR_RIGHT}
 
 
 class Player:
@@ -39,17 +40,28 @@ class Player:
         self.score = 0
         self.torchlife = 100
         self.opacity = 255
+        self.facing = 'r0'
 
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
         self.y -= GRID * DIR_OFFSETS[direction][1]
+        
+    def update_facing(self, direction):
+        if direction == DIR_RIGHT:
+            self.facing = f'r{int(time())%2}'
+        elif direction == DIR_LEFT:
+            self.facing = f'l{int(time())%2}'
+        else:
+            self.facing = f's{int(time())%2}'
 
     def update(self, delta):
         self.wait_time += delta
         self.pick_up_at_me()
         if self.wait_time > Player.MOVE_WAIT:
+            self.update_facing(self.next_direction)
+            self.get_opacity()
             self.torchlife -= 1
-            if self.torchlife < 0:
+            if self.torchlife <= 0:
                 self.die()
             next_block = self.what_next(self.next_direction)
             if self.next_direction != DIR_STILL:
@@ -67,7 +79,6 @@ class Player:
                 if self.check_fall():
                     self.move(DIR_DOWN)
             self.wait_time = 0
-        self.get_opacity()
         self.depth_score = (self.starting_point - self.y) // 32
         self.score = self.pickup_score + self.depth_score//3
 
