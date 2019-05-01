@@ -40,7 +40,7 @@ class Player:
         self.score = 0
         self.torchlife = 100
         self.opacity = 255
-        self.facing = 'r0'
+        self.facing = 's0'
 
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
@@ -60,9 +60,9 @@ class Player:
         if self.wait_time > Player.MOVE_WAIT:
             self.update_facing(self.next_direction)
             self.get_opacity()
-            self.torchlife -= 1
             if self.torchlife <= 0:
                 self.die()
+            self.torchlife -= 1
             next_block = self.what_next(self.next_direction)
             if self.next_direction != DIR_STILL:
                 if next_block == 'torch':
@@ -114,13 +114,13 @@ class Player:
             self.picked_torch()
 
     def die(self):
-        self.world.game_over = True
+        self.world.state = 'OVER'
 
     def get_opacity(self):
         if self.torchlife <= 0:
             self.die()
         else:
-            self.opacity = int(255 - 255*((self.world.player.torchlife-20)/100))
+            self.opacity = int(255 - 255*((self.world.player.torchlife)/100))
 
 
 class Trap:
@@ -201,15 +201,20 @@ class World:
         self.height = height
         self.player = Player(self, GRID // 2 + 3 * GRID, GRID * 17 + GRID // 2)
         self.level = Level(self)
-        self.game_over = False
+        self.state = 'PAUSE'
 
     def update(self, delta):
-        self.player.update(delta)
-        self.level.update()
+        if self.state == 'RUNNING':
+            self.player.update(delta)
+            self.level.update()
 
     def on_key_press(self, key, key_modifiers):
         if key in KEY_MAP:
             self.player.next_direction = KEY_MAP[key]
+        if key in KEY_MAP and self.state == 'PAUSE':
+            self.state = 'RUNNING'
+        if key == arcade.key.P and self.state == 'RUNNING':
+            self.state = 'PAUSE`'
 
     def on_key_release(self):
         self.player.direction = DIR_STILL

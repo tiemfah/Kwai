@@ -109,7 +109,7 @@ class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
 
-        arcade.set_background_color((5, 15, 32))
+        arcade.set_background_color(arcade.color.BLACK)
         self.hint = arcade.load_texture('resource/img/howto.png')
         self.bg = arcade.load_texture('resource/img/bg.png')
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -147,7 +147,8 @@ class GameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        if not self.world.game_over:
+        
+        if self.world.state != 'OVER':
             arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.y+48, 96, SCREEN_HEIGHT, self.bg)
             self.map.draw()
             self.traps.draw()
@@ -155,13 +156,14 @@ class GameWindow(arcade.Window):
             if self.world.player.depth_score < 10:
                 arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.starting_point+144, 288, 256, self.hint)
             else:
-                arcade.draw_line(SCREEN_WIDTH//2-self.world.player.torchlife//2,self.world.player.y+250, SCREEN_WIDTH//2+self.world.player.torchlife//2,self.world.player.y+250, arcade.color.GOLD, 3)
+                torch_length = 0 if self.world.player.torchlife == 0 else self.world.player.torchlife//2
+                arcade.draw_line(SCREEN_WIDTH//2 - torch_length, self.world.player.y+288, SCREEN_WIDTH//2 + torch_length, self.world.player.y+289, arcade.color.GOLD, 5)
                 arcade.draw_rectangle_filled(SCREEN_WIDTH//2, self.world.player.y+48, SCREEN_WIDTH, SCREEN_HEIGHT, (5, 15, 32, self.world.player.opacity))
         else:
             arcade.set_background_color(arcade.color.WHITE)
-            arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.BLACK, 20)
+            arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.WHITE, 20)
             arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH//3,self.world.player.y+30, arcade.color.GOLD, 20)
-            arcade.draw_text('click to restart',SCREEN_WIDTH//4.4,self.world.player.y, arcade.color.BLACK, 20)
+            arcade.draw_text('click to restart',SCREEN_WIDTH//4.4,self.world.player.y, arcade.color.WHITE, 20)
 
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)
@@ -171,7 +173,7 @@ class GameWindow(arcade.Window):
     
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
-            if self.world.game_over:
+            if self.world.state == 'OVER':
                 self.restart()
     
     def restart(self):
