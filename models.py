@@ -1,6 +1,8 @@
-import arcade.key
 from math import ceil, floor
 from time import time
+
+import arcade.key
+
 from map_pool import *
 
 GRID = 32
@@ -45,14 +47,14 @@ class Player:
     def move(self, direction):
         self.x += GRID * DIR_OFFSETS[direction][0]
         self.y -= GRID * DIR_OFFSETS[direction][1]
-        
+
     def update_facing(self, direction):
         if direction == DIR_RIGHT:
-            self.facing = f'r{int(time())%2}'
+            self.facing = f'r{int(time()) % 2}'
         elif direction == DIR_LEFT:
-            self.facing = f'l{int(time())%2}'
+            self.facing = f'l{int(time()) % 2}'
         else:
-            self.facing = f's{int(time())%2}'
+            self.facing = f's{int(time()) % 2}'
 
     def update(self, delta):
         self.wait_time += delta
@@ -80,33 +82,34 @@ class Player:
                     self.move(DIR_DOWN)
             self.wait_time = 0
         self.depth_score = (self.starting_point - self.y) // 32
-        self.score = self.pickup_score + self.depth_score//3
+        self.score = self.pickup_score + self.depth_score // 3
 
     def get_row(self):
         return 18 - ceil(self.y / GRID)
 
     def get_col(self):
         return floor(self.x / GRID)
-    
+
     def check_fall(self):
-        return self.world.level.what_is_at(self.get_row()+1, self.get_col()) in ['air', 'torch', 'trap']
-    
+        return self.world.level.what_is_at(self.get_row() + 1,
+                                           self.get_col()) in ['air', 'torch', 'trap']
+
     def remove_this(self, next_direction):
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
         self.world.level.remove_this(new_r, new_c)
-    
+
     def what_next(self, next_direction):
         new_r = self.get_row() + DIR_OFFSETS[self.next_direction][1]
         new_c = self.get_col() + DIR_OFFSETS[self.next_direction][0]
         return self.world.level.what_is_at(new_r, new_c)
-    
+
     def picked_torch(self):
         self.pickup_score += 1
         self.torchlife += 40
         if self.torchlife > 100:
             self.torchlife = 100
-    
+
     def pick_up_at_me(self):
         r, c = self.get_row(), self.get_col()
         if self.world.level.what_is_at(r, c) == 'torch':
@@ -120,7 +123,7 @@ class Player:
         if self.torchlife <= 0:
             self.die()
         else:
-            self.opacity = int(255 - 255*((self.world.player.torchlife)/100))
+            self.opacity = int(255 - 255 * (self.world.player.torchlife / 100))
 
 
 class Trap:
@@ -129,15 +132,15 @@ class Trap:
         self.r = r
         self.c = c
         self.is_near = self.is_player_near_me()
-    
+
     def did_player_hit_me(self):
         return self.r == self.world.player.get_row() and self.c == self.world.player.get_col()
-    
+
     def is_player_near_me(self):
-        if self.world.player.get_row()-2<= self.r <= self.world.player.get_row()+2:
-            if self.world.player.get_col()-2 <= self.c <= self.world.player.get_col()+2:
+        if self.world.player.get_row() - 2 <= self.r <= self.world.player.get_row() + 2:
+            if self.world.player.get_col() - 2 <= self.c <= self.world.player.get_col() + 2:
                 return True
-    
+
     def update(self):
         self.is_near = self.is_player_near_me()
         if self.did_player_hit_me():
@@ -147,7 +150,7 @@ class Trap:
 class Level:
     def __init__(self, world):
         self.world = world
-        self.map = []+get_map()
+        self.map = [] + get_map()
         self.height = len(self.map)
         self.width = len(self.map[0])
         self.previous_score = self.world.player.depth_score
@@ -175,11 +178,11 @@ class Level:
                           '20': 'trap',
                           '21': 'trap',
                           '22': 'trap',
-                          '23': 'trap',}
+                          '23': 'trap', }
 
     def what_is_at(self, r, c):
         return self.item_dict[self.map[r][c]]
-    
+
     def remove_this(self, r, c):
         self.map[r][c] = '-1'
 
@@ -188,9 +191,9 @@ class Level:
             add_map(self.map)
             self.height = len(self.map)
             self.previous_score = self.world.player.depth_score
-        
+
         for trap in self.trap_list:
-            if SCREEN_HEIGHT - (trap.r * GRID + GRID // 2) > self.world.player.y + GRID*9:
+            if SCREEN_HEIGHT - (trap.r * GRID + GRID // 2) > self.world.player.y + GRID * 9:
                 self.trap_list.remove(trap)
             trap.update()
 

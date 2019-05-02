@@ -1,4 +1,5 @@
 import arcade
+
 from models import *
 
 GRID = 32
@@ -7,6 +8,7 @@ SCREEN_TITLE = 'LAMA X'
 SCREEN_WIDTH = GRID * 9
 SCREEN_HEIGHT = GRID * 18
 VIEWPORT_MARGIN = GRID * 8
+
 
 class ModelSprite(arcade.Sprite):
     def __init__(self, *args, **kwargs):
@@ -28,19 +30,19 @@ class LevelDrawer():
         self.level = levelmap
         self.width = self.level.width
         self.height = self.level.height
-        self.model_dict = {'0':ModelSprite('resource/img/0.png'),
-                           '1':ModelSprite('resource/img/1.png'),
-                           '2':ModelSprite('resource/img/2.png'),
-                           '3':ModelSprite('resource/img/3.png'),
-                           '4':ModelSprite('resource/img/4.png'),
-                           '5':ModelSprite('resource/img/5.png'),
-                           '6':ModelSprite('resource/img/6.png'),
-                           '7':ModelSprite('resource/img/7.png'),
-                           '8':ModelSprite('resource/img/8.png'),
-                           '9':ModelSprite('resource/img/9.png'),
-                           '10':ModelSprite('resource/img/10.png'),
-                           '11':ModelSprite('resource/img/11.png'),
-                           '14':ModelSprite('resource/img/14.png'),}
+        self.model_dict = {'0': ModelSprite('resource/img/0.png'),
+                           '1': ModelSprite('resource/img/1.png'),
+                           '2': ModelSprite('resource/img/2.png'),
+                           '3': ModelSprite('resource/img/3.png'),
+                           '4': ModelSprite('resource/img/4.png'),
+                           '5': ModelSprite('resource/img/5.png'),
+                           '6': ModelSprite('resource/img/6.png'),
+                           '7': ModelSprite('resource/img/7.png'),
+                           '8': ModelSprite('resource/img/8.png'),
+                           '9': ModelSprite('resource/img/9.png'),
+                           '10': ModelSprite('resource/img/10.png'),
+                           '11': ModelSprite('resource/img/11.png'),
+                           '14': ModelSprite('resource/img/14.png'), }
 
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
@@ -59,9 +61,9 @@ class LevelDrawer():
             for c in range(self.width):
                 identity = self.level.what_is_at(r, c)
                 if identity == "trap":
-                    if (r,c) not in self.level.trap_list_index:
+                    if (r, c) not in self.level.trap_list_index:
                         self.level.trap_list.append(Trap(self.level.world, r, c))
-                        self.level.trap_list_index.append((r,c))
+                        self.level.trap_list_index.append((r, c))
                 elif identity == 'air':
                     pass
                 else:
@@ -76,17 +78,17 @@ class TrapDrawer():
     def __init__(self, world):
         self.world = world
         self.trap_list = world.level.trap_list
-        self.trap_sprite_dict = {'15':ModelSprite('resource/img/15.png'),
-                           '16':ModelSprite('resource/img/16.png'),
-                           '17':ModelSprite('resource/img/17.png'),
-                           '18':ModelSprite('resource/img/18.png'),
-                           '19':ModelSprite('resource/img/19.png'),
-                           '20':ModelSprite('resource/img/20.png'),
-                           '21':ModelSprite('resource/img/21.png'),
-                           '22':ModelSprite('resource/img/22.png'),
-                           '23':ModelSprite('resource/img/23.png'),
-                           'alerted':ModelSprite('resource/img/trap_alert.png')}
-    
+        self.trap_sprite_dict = {'15': ModelSprite('resource/img/15.png'),
+                                 '16': ModelSprite('resource/img/16.png'),
+                                 '17': ModelSprite('resource/img/17.png'),
+                                 '18': ModelSprite('resource/img/18.png'),
+                                 '19': ModelSprite('resource/img/19.png'),
+                                 '20': ModelSprite('resource/img/20.png'),
+                                 '21': ModelSprite('resource/img/21.png'),
+                                 '22': ModelSprite('resource/img/22.png'),
+                                 '23': ModelSprite('resource/img/23.png'),
+                                 'alerted': ModelSprite('resource/img/trap_alert.png')}
+
     def get_sprite_position(self, r, c):
         x = c * GRID + (GRID // 2)
         y = SCREEN_HEIGHT - (r * GRID + GRID // 2)
@@ -108,15 +110,15 @@ class TrapDrawer():
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
-        arcade.set_background_color((25,14,27))
+        arcade.set_background_color((25, 14, 27))
         self.hint = arcade.load_texture('resource/img/howto.png')
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
-                      'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
-                      'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
-                      'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
-                      's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
-                      's1': ModelSprite('resource/img/player/s1.png', model=self.world.player)}
+                       'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
+                       'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
+                       'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
+                       's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
+                       's1': ModelSprite('resource/img/player/s1.png', model=self.world.player)}
         self.map = LevelDrawer(self.world.level)
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
@@ -145,44 +147,50 @@ class GameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        
+
         if self.world.state != 'OVER':
             self.map.draw()
             self.traps.draw()
             self.player[self.world.player.facing].draw()
             if self.world.player.depth_score < 10:
-                arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.starting_point+144, 288, 256, self.hint)
+                arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.starting_point + 144, 288, 256, self.hint)
             else:
-                torch_length = 0 if self.world.player.torchlife == 0 else self.world.player.torchlife//2
-                arcade.draw_line(SCREEN_WIDTH//2 - torch_length, self.world.player.y+288, SCREEN_WIDTH//2 + torch_length, self.world.player.y+289, arcade.color.WHITE, 5)
-                arcade.draw_rectangle_filled(SCREEN_WIDTH//2, self.world.player.y+48, SCREEN_WIDTH, SCREEN_HEIGHT, (25,14,27, self.world.player.opacity))
+                torch_length = 0 if self.world.player.torchlife == 0 else self.world.player.torchlife // 2
+                arcade.draw_line(SCREEN_WIDTH // 2 - torch_length, self.world.player.y + 288,
+                                 SCREEN_WIDTH // 2 + torch_length, self.world.player.y + 289,
+                                 arcade.color.WHITE, 5)
+                arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, self.world.player.y + 48, SCREEN_WIDTH, 
+                                            SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
         else:
             arcade.set_background_color(arcade.color.BLACK)
-            arcade.draw_text('GAME OVER', SCREEN_WIDTH//3.5,self.world.player.y+60, arcade.color.WHITE, 20)
-            arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH//3,self.world.player.y+30, arcade.color.GOLD, 20)
-            arcade.draw_text('click to restart',SCREEN_WIDTH//4.4,self.world.player.y, arcade.color.WHITE, 20)
+            arcade.draw_text('GAME OVER', SCREEN_WIDTH // 3.5,
+                             self.world.player.y + 60, arcade.color.WHITE, 20)
+            arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH // 3,
+                             self.world.player.y + 30, arcade.color.GOLD, 20)
+            arcade.draw_text('click to restart', SCREEN_WIDTH // 4.4,
+                             self.world.player.y, arcade.color.WHITE, 20)
 
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)
 
     def on_key_release(self, key, modifiers):
         self.world.on_key_release()
-    
+
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
             if self.world.state == 'OVER':
                 self.restart()
-    
+
     def restart(self):
-        arcade.set_background_color((25,14,27))
+        arcade.set_background_color((25, 14, 27))
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.map = LevelDrawer(self.world.level)
         self.player = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
-                      'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
-                      'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
-                      'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
-                      's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
-                      's1': ModelSprite('resource/img/player/s1.png', model=self.world.player)}
+                       'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
+                       'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
+                       'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
+                       's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
+                       's1': ModelSprite('resource/img/player/s1.png', model=self.world.player)}
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
 
