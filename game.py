@@ -42,6 +42,8 @@ class LevelDrawer():
                            '9': ModelSprite('resource/img/9.png'),
                            '10': ModelSprite('resource/img/10.png'),
                            '11': ModelSprite('resource/img/11.png'),
+                           '12': ModelSprite('resource/img/12.png'),
+                           '13': ModelSprite('resource/img/13.png'),
                            '14': ModelSprite('resource/img/14.png'), }
 
     def get_sprite_position(self, r, c):
@@ -163,12 +165,10 @@ class GameWindow(arcade.Window):
                                             SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
         else:
             arcade.set_background_color(arcade.color.BLACK)
-            arcade.draw_text('GAME OVER', SCREEN_WIDTH // 3.5,
-                             self.world.player.y + 60, arcade.color.WHITE, 20)
-            arcade.draw_text(f"Score: {self.world.player.score}", SCREEN_WIDTH // 3,
-                             self.world.player.y + 30, arcade.color.GOLD, 20)
-            arcade.draw_text('click to restart', SCREEN_WIDTH // 4.4,
-                             self.world.player.y, arcade.color.WHITE, 20)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95,
+                                           arcade.load_texture('resource/img/gameover.png'))
+            arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8,
+                             self.world.player.y + 45, arcade.color.GOLD, 20)
 
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)

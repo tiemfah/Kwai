@@ -60,8 +60,7 @@ class Player:
         self.wait_time += delta
         self.pick_up_at_me()
         if self.wait_time > Player.MOVE_WAIT:
-            self.update_facing(self.next_direction)
-            self.get_opacity()
+            self.update_every_sec()
             if self.torchlife <= 0:
                 self.die()
             self.torchlife -= 1
@@ -81,6 +80,10 @@ class Player:
                 if self.check_fall():
                     self.move(DIR_DOWN)
             self.wait_time = 0
+    
+    def update_every_sec(self):
+        self.update_facing(self.next_direction)
+        self.get_opacity()
         self.depth_score = (self.starting_point - self.y) // 32
         self.score = self.pickup_score + self.depth_score // 3
 
@@ -169,6 +172,8 @@ class Level:
                           '9': 'stone',
                           '10': 'stone',
                           '11': 'stone',
+                          '12': 'dirt',
+                          '13': 'dirt',
                           '14': 'torch',
                           '15': 'trap',
                           '16': 'trap',
@@ -217,7 +222,7 @@ class World:
         if key in KEY_MAP and self.state == 'PAUSE':
             self.state = 'RUNNING'
         if key == arcade.key.P and self.state == 'RUNNING':
-            self.state = 'PAUSE`'
+            self.state = 'PAUSE'
 
     def on_key_release(self):
         self.player.direction = DIR_STILL
