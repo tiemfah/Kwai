@@ -58,7 +58,7 @@ class LevelDrawer():
 
     def draw(self):
         start = self.level.world.player.depth_score - 10 if self.level.world.player.depth_score > 10 else 0
-        stop = self.level.world.player.depth_score + 8 if self.level.world.player.depth_score > 10 else 18
+        stop = self.level.world.player.depth_score + 9 if self.level.world.player.depth_score > 10 else 18
         for r in range(start, stop):
             for c in range(self.width):
                 identity = self.level.what_is_at(r, c)
@@ -112,7 +112,8 @@ class TrapDrawer():
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
-        arcade.set_background_color((25, 14, 27))
+        arcade.set_background_color((17, 9, 18))
+        self.bg = arcade.load_texture('resource/img/bg.png')
         self.hint = arcade.load_texture('resource/img/howto.png')
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
@@ -149,8 +150,9 @@ class GameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-
         if self.world.state != 'OVER':
+            bg_y = SCREEN_HEIGHT//2 if self.world.player.depth_score <2 else self.world.player.y + 44
+            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, bg_y, SCREEN_WIDTH, SCREEN_HEIGHT, self.bg)
             self.map.draw()
             self.traps.draw()
             self.player[self.world.player.facing].draw()
