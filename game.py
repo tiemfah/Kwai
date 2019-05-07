@@ -114,7 +114,8 @@ class GameWindow(arcade.Window):
         super().__init__(width, height, title)
         arcade.set_background_color((17, 9, 18))
         self.bg = arcade.load_texture('resource/img/bg.png')
-        self.hint = arcade.load_texture('resource/img/howto.png')
+        self.help = arcade.load_texture('resource/img/help.png')
+        self.top = arcade.load_texture('resource/img/top.png')
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
                        'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
@@ -150,14 +151,14 @@ class GameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        if self.world.state != 'OVER':
+        if self.world.state in ['PAUSE', 'RUNNING']:
             bg_y = SCREEN_HEIGHT//2 if self.world.player.depth_score <2 else self.world.player.y + 44
             arcade.draw_texture_rectangle(SCREEN_WIDTH//2, bg_y, SCREEN_WIDTH, SCREEN_HEIGHT, self.bg)
             self.map.draw()
             self.traps.draw()
             self.player[self.world.player.facing].draw()
             if self.world.player.depth_score < 10:
-                arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.starting_point + 144, 288, 256, self.hint)
+                arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.starting_point + 144, 288, 256, self.top)
             else:
                 torch_length = 0 if self.world.player.torchlife == 0 else self.world.player.torchlife // 2
                 arcade.draw_line(SCREEN_WIDTH // 2 - torch_length, self.world.player.y + 288,
@@ -165,6 +166,8 @@ class GameWindow(arcade.Window):
                                  arcade.color.WHITE, 5)
                 arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, self.world.player.y + 48, SCREEN_WIDTH, 
                                             SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
+        elif self.world.state == 'HELP':
+            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.y-16, SCREEN_WIDTH, SCREEN_HEIGHT, self.help)
         else:
             arcade.set_background_color(arcade.color.BLACK)
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95,
