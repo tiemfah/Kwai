@@ -25,7 +25,7 @@ KEY_MAP = {arcade.key.W: DIR_UP,
            arcade.key.A: DIR_LEFT,
            arcade.key.D: DIR_RIGHT}
 
-# GAME_STATE CAN BE 'RUNNING', 'OVER', 'PAUSE'
+# GAME_STATE CAN BE 'RUNNING', 'OVER', 'PAUSE', 'INIT'
 
 class Player:
     MOVE_WAIT = 0.15
@@ -210,7 +210,7 @@ class World:
         self.height = height
         self.player = Player(self, GRID // 2 + 3 * GRID, GRID * 17 + GRID // 2)
         self.level = Level(self)
-        self.state = 'PAUSE'
+        self.state = 'INIT'
 
     def update(self, delta):
         if self.state == 'RUNNING':
@@ -218,15 +218,21 @@ class World:
             self.level.update()
 
     def on_key_press(self, key, key_modifiers):
-        if self.state == 'PAUSE':
-            if key == arcade.key.P:
+        if self.state == 'INIT':
+            if key:
                 self.state = 'RUNNING'
-            elif key == arcade.key.H:
-                self.state = 'HELP'
+        elif key == arcade.key.P:
+            if self.state != 'PAUSE':
+                self.state = 'PAUSE' 
+            else:
+                self.state = 'RUNNING'
+        elif key == arcade.key.H:
+            if self.state != 'HELP':
+                self.state = 'HELP' 
+            else:
+                self.state = 'RUNNING'
         elif self.state == 'RUNNING':
-            if key == arcade.key.P:
-                self.state = 'PAUSE'
-            elif key in KEY_MAP:
+            if key in KEY_MAP:
                 self.player.next_direction = KEY_MAP[key]
 
     def on_key_release(self):

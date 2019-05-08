@@ -116,6 +116,7 @@ class GameWindow(arcade.Window):
         self.bg = arcade.load_texture('resource/img/bg.png')
         self.help = arcade.load_texture('resource/img/help.png')
         self.top = arcade.load_texture('resource/img/top.png')
+        self.pause = arcade.load_texture('resource/img/pause.png')
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.player = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
                        'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
@@ -151,9 +152,8 @@ class GameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        if self.world.state in ['PAUSE', 'RUNNING']:
-            bg_y = SCREEN_HEIGHT//2 if self.world.player.depth_score <2 else self.world.player.y + 44
-            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, bg_y, SCREEN_WIDTH, SCREEN_HEIGHT, self.bg)
+        if self.world.state != 'OVER':
+            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.bg)
             self.map.draw()
             self.traps.draw()
             self.player[self.world.player.facing].draw()
@@ -166,8 +166,10 @@ class GameWindow(arcade.Window):
                                  arcade.color.WHITE, 5)
                 arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, self.world.player.y + 48, SCREEN_WIDTH, 
                                             SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
-        elif self.world.state == 'HELP':
-            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.world.player.y-16, SCREEN_WIDTH, SCREEN_HEIGHT, self.help)
+            if self.world.state == 'HELP':
+                arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.help)
+            elif self.world.state == 'PAUSE':
+                arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.pause)
         else:
             arcade.set_background_color(arcade.color.BLACK)
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95,
