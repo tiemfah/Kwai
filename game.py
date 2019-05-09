@@ -190,7 +190,6 @@ class GameWindow(arcade.Window):
             arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.pause)
         elif self.world.state == 'OVER':
             arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.gameover)
-            # arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD, 20)
             self.draw_score()
 
     def on_key_press(self, key, modifiers):
