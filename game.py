@@ -165,6 +165,12 @@ class GameWindow(arcade.Window):
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95, self.gameover)
         arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD, 20)
 
+    def draw_score(self):
+        x_increment = 35
+        for char in str(self.world.player.score):
+            arcade.draw_texture_rectangle(SCREEN_WIDTH//2 + x_increment, self.view_bottom + SCREEN_HEIGHT//2, 30, 34, arcade.load_texture(f'resource/img/number/{char}.png'))
+            x_increment += 35
+
     def on_draw(self):
         arcade.start_render()
         # draw the game
@@ -183,8 +189,9 @@ class GameWindow(arcade.Window):
         elif self.world.state == 'PAUSE':
             arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.pause)
         elif self.world.state == 'OVER':
-            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95, self.gameover)
-            arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD, 20)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.gameover)
+            # arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD, 20)
+            self.draw_score()
 
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)
