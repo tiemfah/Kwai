@@ -150,31 +150,34 @@ class GameWindow(arcade.Window):
         self.world.update(delta)
         self.map.update(self.world.level)
         self.change_view()
-    
+
     def getting_dark(self):
-        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, self.world.player.y + 48, SCREEN_WIDTH, 
-                                        SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
-    
+        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, self.world.player.y + 48, SCREEN_WIDTH,
+                                     SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
+
     def draw_torchbar(self):
         torch_length = 0 if self.world.player.torchlife == 0 else self.world.player.torchlife // 2
         arcade.draw_line(SCREEN_WIDTH // 2 - torch_length, self.world.player.y + 288,
-                            SCREEN_WIDTH // 2 + torch_length, self.world.player.y + 289,
-                            arcade.color.WHITE, 5)
-    
+                         SCREEN_WIDTH // 2 + torch_length, self.world.player.y + 289,
+                         arcade.color.WHITE, 5)
+
     def draw_gameover(self):
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95, self.gameover)
-        arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD, 20)
+        arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD,
+                         20)
 
     def draw_score(self):
         x_increment = 35
         for char in str(self.world.player.score):
-            arcade.draw_texture_rectangle(SCREEN_WIDTH//2 + x_increment, self.view_bottom + SCREEN_HEIGHT//2, 30, 34, arcade.load_texture(f'resource/img/number/{char}.png'))
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2 + x_increment, self.view_bottom + SCREEN_HEIGHT // 2, 30,
+                                          34, arcade.load_texture(f'resource/img/number/{char}.png'))
             x_increment += 35
 
     def on_draw(self):
         arcade.start_render()
         # draw the game
-        arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.bg)
+        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.view_bottom + SCREEN_HEIGHT // 2, SCREEN_WIDTH,
+                                      SCREEN_HEIGHT, self.bg)
         self.map.draw()
         self.traps.draw()
         self.player_dict[self.world.player.facing].draw()
@@ -185,11 +188,14 @@ class GameWindow(arcade.Window):
             self.draw_torchbar()
         # draw overlay -> help, pause, gameover
         if self.world.state == 'HELP':
-            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.help)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.view_bottom + SCREEN_HEIGHT // 2, SCREEN_WIDTH,
+                                          SCREEN_HEIGHT, self.help)
         elif self.world.state == 'PAUSE':
-            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.pause)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.view_bottom + SCREEN_HEIGHT // 2, SCREEN_WIDTH,
+                                          SCREEN_HEIGHT, self.pause)
         elif self.world.state == 'OVER':
-            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.gameover)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.view_bottom + SCREEN_HEIGHT // 2, SCREEN_WIDTH,
+                                          SCREEN_HEIGHT, self.gameover)
             self.draw_score()
 
     def on_key_press(self, key, modifiers):

@@ -25,6 +25,7 @@ KEY_MAP = {arcade.key.W: DIR_UP,
            arcade.key.A: DIR_LEFT,
            arcade.key.D: DIR_RIGHT}
 
+
 # GAME_STATE CAN BE 'RUNNING', 'OVER', 'PAUSE', 'INIT'
 
 class Player:
@@ -81,7 +82,7 @@ class Player:
                 if self.check_fall():
                     self.move(DIR_DOWN)
             self.wait_time = 0
-    
+
     def update_every_sec(self):
         self.update_facing(self.next_direction)
         self.get_opacity()
@@ -226,12 +227,12 @@ class World:
                 self.state = 'RUNNING'
         elif key == arcade.key.P:
             if self.state != 'PAUSE':
-                self.state = 'PAUSE' 
+                self.state = 'PAUSE'
             else:
                 self.state = 'RUNNING'
         elif key == arcade.key.H:
             if self.state != 'HELP':
-                self.state = 'HELP' 
+                self.state = 'HELP'
             else:
                 self.state = 'RUNNING'
         elif self.state == 'RUNNING':

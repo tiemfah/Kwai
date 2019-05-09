@@ -1,5 +1,5 @@
-from glob import glob
 from copy import deepcopy
+from glob import glob
 from random import choice
 
 map_pool_list = []
