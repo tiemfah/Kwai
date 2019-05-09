@@ -112,18 +112,19 @@ class TrapDrawer():
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
-        arcade.set_background_color((17, 9, 18))
+        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.bg = arcade.load_texture('resource/img/bg.png')
         self.help = arcade.load_texture('resource/img/help.png')
         self.top = arcade.load_texture('resource/img/top.png')
         self.pause = arcade.load_texture('resource/img/pause.png')
-        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.player = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
-                       'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
-                       'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
-                       'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
-                       's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
-                       's1': ModelSprite('resource/img/player/s1.png', model=self.world.player)}
+        self.gameover = arcade.load_texture('resource/img/gameover.png')
+        self.player_dict = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
+                            'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
+                            'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
+                            'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
+                            's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
+                            's1': ModelSprite('resource/img/player/s1.png', model=self.world.player),
+                            'd0': ModelSprite('resource/img/player/d0.png', model=self.world.player)}
         self.map = LevelDrawer(self.world.level)
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
@@ -149,33 +150,41 @@ class GameWindow(arcade.Window):
         self.world.update(delta)
         self.map.update(self.world.level)
         self.change_view()
+    
+    def getting_dark(self):
+        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, self.world.player.y + 48, SCREEN_WIDTH, 
+                                        SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
+    
+    def draw_torchbar(self):
+        torch_length = 0 if self.world.player.torchlife == 0 else self.world.player.torchlife // 2
+        arcade.draw_line(SCREEN_WIDTH // 2 - torch_length, self.world.player.y + 288,
+                            SCREEN_WIDTH // 2 + torch_length, self.world.player.y + 289,
+                            arcade.color.WHITE, 5)
+    
+    def draw_gameover(self):
+        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95, self.gameover)
+        arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD, 20)
 
     def on_draw(self):
         arcade.start_render()
-        if self.world.state != 'OVER':
-            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.bg)
-            self.map.draw()
-            self.traps.draw()
-            self.player[self.world.player.facing].draw()
-            if self.world.player.depth_score < 10:
-                arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.starting_point + 144, 288, 256, self.top)
-            else:
-                torch_length = 0 if self.world.player.torchlife == 0 else self.world.player.torchlife // 2
-                arcade.draw_line(SCREEN_WIDTH // 2 - torch_length, self.world.player.y + 288,
-                                 SCREEN_WIDTH // 2 + torch_length, self.world.player.y + 289,
-                                 arcade.color.WHITE, 5)
-                arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, self.world.player.y + 48, SCREEN_WIDTH, 
-                                            SCREEN_HEIGHT, (25, 14, 27, self.world.player.opacity))
-            if self.world.state == 'HELP':
-                arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.help)
-            elif self.world.state == 'PAUSE':
-                arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.pause)
+        # draw the game
+        arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.bg)
+        self.map.draw()
+        self.traps.draw()
+        self.player_dict[self.world.player.facing].draw()
+        if self.world.player.depth_score < 10:
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.starting_point + 144, 288, 256, self.top)
         else:
-            arcade.set_background_color(arcade.color.BLACK)
-            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95,
-                                           arcade.load_texture('resource/img/gameover.png'))
-            arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8,
-                             self.world.player.y + 45, arcade.color.GOLD, 20)
+            self.getting_dark()
+            self.draw_torchbar()
+        # draw overlay -> help, pause, gameover
+        if self.world.state == 'HELP':
+            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.help)
+        elif self.world.state == 'PAUSE':
+            arcade.draw_texture_rectangle(SCREEN_WIDTH//2, self.view_bottom + SCREEN_HEIGHT//2, SCREEN_WIDTH, SCREEN_HEIGHT, self.pause)
+        elif self.world.state == 'OVER':
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, self.world.player.y + 70, 288, 95, self.gameover)
+            arcade.draw_text(f"{self.world.player.score}", SCREEN_WIDTH // 1.8, self.world.player.y + 45, arcade.color.GOLD, 20)
 
     def on_key_press(self, key, modifiers):
         self.world.on_key_press(key, modifiers)
@@ -192,12 +201,13 @@ class GameWindow(arcade.Window):
         arcade.set_background_color((25, 14, 27))
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.map = LevelDrawer(self.world.level)
-        self.player = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
-                       'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
-                       'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
-                       'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
-                       's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
-                       's1': ModelSprite('resource/img/player/s1.png', model=self.world.player)}
+        self.player_dict = {'l0': ModelSprite('resource/img/player/l0.png', model=self.world.player),
+                            'l1': ModelSprite('resource/img/player/l1.png', model=self.world.player),
+                            'r0': ModelSprite('resource/img/player/r0.png', model=self.world.player),
+                            'r1': ModelSprite('resource/img/player/r1.png', model=self.world.player),
+                            's0': ModelSprite('resource/img/player/s0.png', model=self.world.player),
+                            's1': ModelSprite('resource/img/player/s1.png', model=self.world.player),
+                            'd0': ModelSprite('resource/img/player/d0.png', model=self.world.player)}
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
 

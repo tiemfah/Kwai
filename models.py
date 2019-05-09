@@ -122,6 +122,9 @@ class Player:
 
     def die(self):
         self.world.state = 'OVER'
+        self.facing = 'd0'
+        arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/explosion.wav'))
+        arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/dead.wav'))
 
     def get_opacity(self):
         if self.torchlife <= 0:
