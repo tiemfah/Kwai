@@ -218,11 +218,19 @@ class World:
         self.player = Player(self, GRID // 2 + 3 * GRID, GRID * 17 + GRID // 2)
         self.level = Level(self)
         self.state = 'INIT'
+        self.bg_music_time = 90
 
     def update(self, delta):
         if self.state == 'RUNNING':
             self.player.update(delta)
             self.level.update()
+        self.run_bg_msc(delta)
+    
+    def run_bg_msc(self, delta):
+        self.bg_music_time += delta
+        if self.bg_music_time > 90:
+            arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/bg.wav'))
+            self.bg_music_time = 0
 
     def on_key_press(self, key, key_modifiers):
         if self.state == 'INIT':
