@@ -72,6 +72,7 @@ class Player:
                     self.remove_this(self.next_direction)
                     self.picked_torch()
                 elif next_block == 'dirt':
+                    arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/dig.wav'))
                     self.remove_this(self.next_direction)
                 elif next_block in ['air', 'trap']:
                     self.direction = self.next_direction
@@ -110,6 +111,7 @@ class Player:
         return self.world.level.what_is_at(new_r, new_c)
 
     def picked_torch(self):
+        arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/fire.wav'))
         self.pickup_score += 1
         self.torchlife += 40
         if self.torchlife > 100:
@@ -124,7 +126,6 @@ class Player:
     def die(self):
         self.world.state = 'OVER'
         self.facing = 'd0'
-        arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/explosion.wav'))
         arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/dead.wav'))
 
     def get_opacity(self):
@@ -152,6 +153,7 @@ class Trap:
     def update(self):
         self.is_near = self.is_player_near_me()
         if self.did_player_hit_me():
+            arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/explosion.wav'))
             self.world.player.die()
 
 
