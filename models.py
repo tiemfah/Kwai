@@ -65,7 +65,8 @@ class Player:
             self.update_every_sec()
             if self.torchlife <= 0:
                 self.die()
-            self.torchlife -= 1
+            if self.world.player.y < 288:
+                self.torchlife -= 1
             next_block = self.what_next(self.next_direction)
             if self.next_direction != DIR_STILL:
                 if next_block == 'torch':
