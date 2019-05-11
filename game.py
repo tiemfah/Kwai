@@ -128,6 +128,7 @@ class GameWindow(arcade.Window):
         self.map = LevelDrawer(self.world.level)
         self.traps = TrapDrawer(self.world)
         self.view_bottom = 0
+        self.bg_music_time = 90
 
     def change_view(self):
         changed = True
@@ -149,6 +150,7 @@ class GameWindow(arcade.Window):
     def update(self, delta):
         self.world.update(delta)
         self.map.update(self.world.level)
+        self.run_bg_msc(delta)
         self.change_view()
 
     def getting_dark(self):
@@ -208,6 +210,12 @@ class GameWindow(arcade.Window):
         if button == arcade.MOUSE_BUTTON_LEFT:
             if self.world.state == 'OVER':
                 self.restart()
+    
+    def run_bg_msc(self, delta):
+        self.bg_music_time += delta
+        if self.bg_music_time > 90:
+            arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/bg.wav'))
+            self.bg_music_time = 0
 
     def restart(self):
         arcade.set_background_color((25, 14, 27))

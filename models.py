@@ -66,7 +66,7 @@ class Player:
             if self.torchlife <= 0:
                 self.die()
             if self.world.player.y < 288:
-                self.torchlife -= 1
+                self.torchlife -= 2
             next_block = self.what_next(self.next_direction)
             if self.next_direction != DIR_STILL:
                 if next_block == 'torch':
@@ -114,7 +114,7 @@ class Player:
     def picked_torch(self):
         arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/fire.wav'))
         self.pickup_score += 1
-        self.torchlife += 40
+        self.torchlife += 100
         if self.torchlife > 100:
             self.torchlife = 100
 
@@ -224,13 +224,7 @@ class World:
         if self.state == 'RUNNING':
             self.player.update(delta)
             self.level.update()
-        self.run_bg_msc(delta)
     
-    def run_bg_msc(self, delta):
-        self.bg_music_time += delta
-        if self.bg_music_time > 90:
-            arcade.sound.play_sound(arcade.sound.load_sound('resource/audio/bg.wav'))
-            self.bg_music_time = 0
 
     def on_key_press(self, key, key_modifiers):
         if self.state == 'INIT':
