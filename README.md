@@ -4,3 +4,5 @@ SKE Freshman year's second semester project
 # ใกล้ละ
 # ใกล้เสร็จ?
 # ใกล้ตาย
+# เสร๊จแล้ว
+![snapshot](https://github.com/tiemfah/The-Lama-X/blob/master/snap.PNG)
